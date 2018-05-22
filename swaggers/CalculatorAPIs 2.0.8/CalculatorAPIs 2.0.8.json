@@ -1,0 +1,398 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "The Liability Calculator provides the capability to determine the tax liability of a tax payer for a given period and given set of incomes, benefits and deductions.",
+    "version": "2.0.8",
+    "title": "Liability Calculator"
+  },
+  "host": "liablity-calculator:8001",
+  "basePath": "/",
+  "tags": [
+    {
+      "name": "External",
+      "description": "APIs exposed to DES via the API Gateway"
+    },
+    {
+      "name": "Calculate",
+      "description": "Calculation requests"
+    },
+    {
+      "name": "Crystallise",
+      "description": "Crystallisation"
+    }
+  ],
+  "schemes": [
+    "https"
+  ],
+  "paths": {
+    "/calculate/{taxEntityId}/{taxYear}": {
+      "get": {
+        "tags": [
+          "Calculate",
+          "External"
+        ],
+        "summary": "API#17 - Request an Income Tax liability calculation",
+        "description": "Request a liability calculation for the given tax payer identifier and tax year. This operation will determine if a calculation can be performed and respond appropriately. In normal operation a calculation id will always be returned even if the calculator determines that the data associated with this calculation request is not capable of supporting a calculation.",
+        "operationId": "requestCalculation",
+        "produces": [
+          "text/plain"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/parameters/TaxEntityId"
+          },
+          {
+            "$ref": "#/parameters/TaxYear"
+          },
+          {
+            "name": "crystallise",
+            "in": "query",
+            "description": "Defines if the calculation request is for crystallisation purposes When true the calculation will be marked as 'intent to crystallise' and crystallisation BVRs applied",
+            "required": false,
+            "type": "boolean"
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "The calculation request has been accepted. The data supplied has been validated successfully, and the calculation result associated with the supplied calculation id will be posted to the calculation store in due course.",
+            "schema": {
+              "$ref": "#/definitions/calcId",
+              "type": "string",
+              "description": "The allocated calculation ID to be used to get the result",
+              "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+            }
+          },
+          "401": {
+            "description": "The client has not been authenticated and therefore cannot use this service."
+          },
+          "422": {
+            "description": "The calculation request has been rejected. The data supplied has failed validation and the details of the associated failures have been associated with the supplied calculation id and posted to the calculation store. Possible error codes are -\n  2000 - Failed to publish calculation request;\n  2001 - Invalid Calculation ID supplied;\n  2099 - Business Validation Rule failures",
+            "schema": {
+              "$ref": "#/definitions/errorResponse"
+            }
+          },
+          "502": {
+            "description": "The calculator has been unable to fulfill the calculation request at this time. The client should retry the request in due course."
+          }
+        }
+      }
+    },
+    "/calculate/businessincomesummary/{taxEntityId}/source/{incomeSourceId}": {
+      "get": {
+        "tags": [
+          "Calculate"
+        ],
+        "summary": "Request a business income summary.",
+        "description": "This supplies an income summary for a given income source.  When run as full year the EOPS business validation rules will apply",
+        "operationId": "businessIncomeSummary",
+        "produces": [
+          "text/plain"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/parameters/TaxEntityId"
+          },
+          {
+            "$ref": "#/parameters/IncomeSourceId"
+          },
+          {
+            "$ref": "#/parameters/IncomeSourceTypeQuery"
+          },
+          {
+            "name": "startDate",
+            "in": "query",
+            "description": "The start date for the income source period being summerised. Format is YYYY-MM-DD",
+            "required": true,
+            "type": "string",
+            "pattern": "^\\\\d{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$"
+          },
+          {
+            "name": "endDate",
+            "in": "query",
+            "description": "The end date for the income source period being summerised. Format is YYYY-MM-DD",
+            "required": true,
+            "type": "string",
+            "pattern": "^\\\\d{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$"
+          },
+          {
+            "name": "inYear",
+            "in": "query",
+            "description": "Defines if the calculation should be treated as an in-year calculation If true (default) no business validation rules will be applied If false the full year (EOPS) business validation rules will be applied",
+            "required": false,
+            "type": "boolean"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The calculated Business Income Source Summarry (BISS) has been returned",
+            "schema": {
+              "$ref": "#/definitions/biss"
+            }
+          },
+          "401": {
+            "description": "The client has not been authenticated and therefore cannot use this service."
+          },
+          "422": {
+            "description": "The calculation request has been rejected. Where data has failed validation the details validation errors have been returned Possible error codes are -\n  2000 - Failed to publish calculation request;\n  2003 - No income submissions exist;\n  2099 - Business Validation Rule failures",
+            "schema": {
+              "$ref": "#/definitions/errorResponse"
+            }
+          },
+          "502": {
+            "description": "The calculator has been unable to fulfill the request at this time. The client should retry the request in due course."
+          }
+        }
+      }
+    },
+    "/crystallise/{taxEntityId}/{taxYear}/{calcId}": {
+      "post": {
+        "tags": [
+          "Crystallise",
+          "External"
+        ],
+        "summary": "API#?? - Declare Crystallisation for Tax Year",
+        "description": "Declare a previously intent to crystallise calculation as being crystallised. This will validate the calculation ID presented and that there have been no  further income submissions for the Tax year since that calculation was performed. If validation is sucessful the declaration will be accepted.",
+        "operationId": "declareCrystallised",
+        "produces": [
+          "text/plain"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/parameters/TaxEntityId"
+          },
+          {
+            "$ref": "#/parameters/TaxYear"
+          },
+          {
+            "name": "calcId",
+            "in": "path",
+            "description": "The calculation ID previously supplied by an intent to crystallise calculation",
+            "required": true,
+            "type": "string",
+            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "The declaration request has been accepted. The data supplied has been validated successfully, and the calculation result associated with the supplied calculation id will be posted to the calculation store in due course.",
+            "schema": {
+              "$ref": "#/definitions/calcId"
+            }
+          },
+          "401": {
+            "description": "The client has not been authenticated and therefore cannot use this service."
+          },
+          "422": {
+            "description": "The declaration request has been rejected. Please perform a new intent to  crystallise calculation and then re-declare Possible error codes are -\n  2001 - Invalid Calculation ID supplied;\n  2005 - Income Sources changed - please recalculate before crystallising;\n  2006 - More recent submissions - please recalculate before crystallising;\n  2007 - Residency changed - please recalculate before crystallising",
+            "schema": {
+              "$ref": "#/definitions/errorResponse"
+            }
+          },
+          "502": {
+            "description": "The service has been unable to fulfill the declaration request at this time. The client should retry the request in due course."
+          }
+        }
+      }
+    }
+  },
+  "parameters": {
+    "TaxEntityId": {
+      "in": "path",
+      "name": "taxEntityId",
+      "type": "string",
+      "description": "Unique identity of the tax entity to which the income source must relate.",
+      "required": true,
+      "maxLength": 16,
+      "pattern": "^[a-zA-Z0-9]+$"
+    },
+    "IncomeSourceId": {
+      "in": "path",
+      "name": "incomeSourceId",
+      "type": "string",
+      "required": true,
+      "description": "The Income Source ID",
+      "pattern": "^[A-Za-z0-9]{15}$"
+    },
+    "IncomeSourceTypeQuery": {
+      "in": "query",
+      "name": "incomeSourceType",
+      "required": true,
+      "type": "string",
+      "enum": [
+        "01",
+        "02",
+        "03",
+        "04",
+        "05",
+        "06",
+        "07",
+        "08",
+        "09",
+        "10",
+        "11",
+        "12",
+        "13",
+        "14",
+        "99"
+      ],
+      "description": "Indicates the income source type.  Values are - 01=Self-Employment, 02=UK Property, 03=FHL Property - EEA, 04=FHL Property - UK, 05=Employment, 06=Foreign income, 07=Dividends from foreign companies, 08=Trusts and Estates, 09=Interest from UK banks, building societies and securities etc., 10=Dividends from UK companies; 11=UK pensions and state benefits, 12=Gains on life insurance policies etc., 13=Share schemes, 14=Partnership, 99=Other income."
+    },
+    "TaxYear": {
+      "in": "path",
+      "name": "taxYear",
+      "description": "The tax year to calculate the liability for (between 2016 and 9999). NB. The is the year in which the Tax year ends (e.g. 2018 relates to Tax Year 2017-2018)",
+      "required": true,
+      "type": "integer",
+      "minimum": 2016,
+      "maximum": 2999
+    }
+  },
+  "definitions": {
+    "calcId": {
+      "description": "The allocated calculation ID to be used to get the result",
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+    },
+    "IncomeSourceId": {
+      "type": "string",
+      "description": "The Income Source ID",
+      "pattern": "^[A-Za-z0-9]{15}$"
+    },
+    "MonetaryPos": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 99999999999999.99,
+      "multipleOf": 0.01,
+      "description": "Defines a monetary value (to 2 decimal places), between 0 and 99,999,999,999,999.99"
+    },
+    "MonetaryPosNeg": {
+      "type": "number",
+      "minimum": -99999999999999.99,
+      "maximum": 99999999999999.99,
+      "multipleOf": 0.01,
+      "description": "Defines a monetary value (to 2 decimal places), between -99,999,999,999,999.99 and 99,999,999,999,999.99"
+    },
+    "biss": {
+      "type": "object",
+      "description": "The business income source summary",
+      "required": [
+        "incomeSourceID",
+        "finalised",
+        "totalIncome",
+        "totalExpenses",
+        "netProfit",
+        "netLoss",
+        "taxableProfit",
+        "taxableLoss"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "incomeSourceID": {
+          "$ref": "#/definitions/IncomeSourceId"
+        },
+        "totalIncome": {
+          "$ref": "#/definitions/MonetaryPos",
+          "description": "Total income for the income source"
+        },
+        "totalExpenses": {
+          "$ref": "#/definitions/MonetaryPos",
+          "description": "Total expenses for the income source"
+        },
+        "netProfit": {
+          "$ref": "#/definitions/MonetaryPos",
+          "description": "Net profit of income Source"
+        },
+        "netLoss": {
+          "$ref": "#/definitions/MonetaryPos",
+          "description": "Net loss of income Source"
+        },
+        "totalAdditions": {
+          "$ref": "#/definitions/MonetaryPos",
+          "description": "The total additions to net profit (or deduction to net loss)"
+        },
+        "totalDeductions": {
+          "$ref": "#/definitions/MonetaryPos",
+          "description": "The total deductions to net loss (or addition to net profit)"
+        },
+        "accountingAdjustments": {
+          "$ref": "#/definitions/MonetaryPosNeg",
+          "description": "Accounting adjustments"
+        },
+        "taxableProfit": {
+          "$ref": "#/definitions/MonetaryPos",
+          "description": "Taxable net profit from the income source"
+        },
+        "taxableLoss": {
+          "$ref": "#/definitions/MonetaryPos",
+          "description": "Taxable net loss from the income source"
+        }
+      }
+    },
+    "bvrMessages": {
+      "type": "array",
+      "description": "An array of BVR warning and error messages",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "type",
+          "text"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^C[0-9]{5}$",
+            "description": "BVR message ID"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "ERR",
+              "WARN"
+            ],
+            "description": "Type of message (Error or Warning)"
+          },
+          "text": {
+            "type": "string",
+            "description": "BVR message text"
+          }
+        }
+      }
+    },
+    "errorResponse": {
+      "type": "object",
+      "required": [
+        "errorCode",
+        "errorDescription"
+      ],
+      "description": "Common error response data. Valid valus are - \n  2000 - Publication failure; \n  2001 - Invalid Calculation ID supplied; \n  2002 - No valid income sources; \n  2003 - No income submissions exist; \n  2005 - Income Sources changed - please recalculate before crystallising; \n  2006 - More recent submissions - please recalculate before crystallising; \n  2007 - Residency changed - please recalculate before crystallising",
+      "additionalProperties": false,
+      "properties": {
+        "errorCode": {
+          "type": "string",
+          "enum": [
+            "2000",
+            "2001",
+            "2002",
+            "2003",
+            "2005",
+            "2006",
+            "2007",
+            "2099"
+          ]
+        },
+        "errorDescription": {
+          "type": "string"
+        },
+        "calcID": {
+          "$ref": "#/definitions/calcId"
+        },
+        "validationRuleFailures": {
+          "$ref": "#/definitions/bvrMessages"
+        }
+      }
+    }
+  }
+}

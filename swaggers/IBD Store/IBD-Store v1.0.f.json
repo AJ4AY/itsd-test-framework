@@ -1,0 +1,2152 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "Documentation for Self-Employment Period APIs",
+    "version": "1.0.f",
+    "title": "IBD Store"
+  },
+  "host": "ibd-store:8080",
+  "basePath": "/ibd-store",
+  "tags": [
+    {
+      "name": "Self-Employment",
+      "description": "APIs exposed for the Self-Employment Income Source type"
+    },
+    {
+      "name": "UK Other Property",
+      "description": "APIs exposed for the UK Other Property Income Source sub-type"
+    },
+    {
+      "name": "UK FHL Property",
+      "description": "APIs exposed for the UK FHL Property Income Source sub-type"
+    },
+    {
+      "name": "IBD Position"
+    },
+    {
+      "name": "YTD Position"
+    },
+    {
+      "name": "External",
+      "description": "APIs exposed to DES via the API Gateway"
+    }
+  ],
+  "paths": {
+    "/ibd-submission-periods/self-employments/{incomeSourceId}/{taxableEntityId}": {
+      "post": {
+        "tags": [
+          "Self-Employment",
+          "External"
+        ],
+        "summary": "Create Self-Employment period (API#29)",
+        "description": "Creates a Self-Employment period and stores the corresponding submission data for an Income Source.",
+        "operationId": "postSelfEmploymentPeriod",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/parameters/taxableEntityId"
+          },
+          {
+            "$ref": "#/parameters/incomeSourceId"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Details of the data being submitted",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/selfEmploymentPeriodAndAnnualsWithDates"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "schema": {
+              "$ref": "#/definitions/ibdSubmissionPeriodId"
+            }
+          },
+          "400": {
+            "description": "Bad Request - see error code and description for reason.  Valid error code values are\n  4006 - Invalid input parameter\n  4007 - Missing input parameter\n  4008 - The Period and Annual objects cannot be provided together in the request body",
+            "schema": {
+              "$ref": "#/definitions/errorResponse"
+            }
+          },
+          "404": {
+            "description": "Bad Request - see error code and description for reason.  Valid error code values are\n  4000 - Income Source not found",
+            "schema": {
+              "$ref": "#/definitions/errorResponse"
+            }
+          },
+          "409": {
+            "description": "Resource Conflict - see error code and description for reason.  Valid error code values are\n  4005 - Submission Period already exists",
+            "schema": {
+              "$ref": "#/definitions/errorResponse"
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity - see error code and description for reason.  Valid error code values are\n  4009 - Period Submitted Does Not Align To Accounting Period\n  4010 - Submission Period Includes Overlaps\n  4011 - Submission Period Includes Gaps\n  4012 - Submission Period Start Date Is After Submission Period End Date\n  4013 - The annual submission period start and end dates must match an accounting period's start and end dates\n  4014 - Both consolidated expenses and full breakdown of expenses supplied\n  4015 - Year-to-date turnover exceeds the consolidated expenses threshold\n  4016 - Class 4 NICs exemption reason not supplied\n  4017 - Class 4 NICs exemption reason supplied without exemption indicator\n  4018 - Class 4 Exemption Under State Pension Age at the start of current tax year\n  4019 - Class 4 Exemption Over 16 years old at the start of current tax year",
+            "schema": {
+              "$ref": "#/definitions/errorResponse"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Self-Employment",
+          "External"
+        ],
+        "summary": "Get Self-Employment Periods (API#40)",
+        "description": "Gets a list of Self-Employment Periods for a given Income Source",
+        "operationId": "getSelfEmploymentPeriods",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/parameters/taxableEntityId"
+          },
+          {
+            "$ref": "#/parameters/incomeSourceId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/ibdDataPeriod"
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request - see error code and description for reason.  Valid error code values are\n  4006 - Invalid input parameter",
+            "schema": {
+              "$ref": "#/definitions/errorResponse"
+            }
+          },
+          "404": {
+            "description": "Bad Request - see error code and description for reason.  Valid error code values are\n  4000 - Income Source not found",
+            "schema": {
+              "$ref": "#/definitions/errorResponse"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/ibd-submission-periods/self-employments/{incomeSourceId}/{taxableEntityId}/{ibdSubmissionPeriodId}": {
+      "put": {
+        "tags": [
+          "Self-Employment",
+          "External"
+        ],
+        "summary": "Amends Self-Employment Period (API#31)",
+        "description": "Amends a Self-Employment Period and the corresponding submission data for an Income Source",
+        "operationId": "putSelfEmploymentPeriod",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/parameters/taxableEntityId"
+          },
+          {
+            "$ref": "#/parameters/incomeSourceId"
+          },
+          {
+            "$ref": "#/parameters/ibdSubmissionPeriodId"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Details of the data being submitted",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/selfEmploymentPeriodAndAnnuals"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/ibdSubmissionPeriodId"
+            }
+          },
+          "400": {
+            "description": "Bad Request - see error code and description for reason.  Valid error code values are\n  4006 - Invalid input parameter\n  4007 - Missing input parameter\n  4008 - The Period and Annual objects cannot be provided together in the request body",
+            "schema": {
+              "$ref": "#/definitions/errorResponse"
+            }
+          },
+          "404": {
+            "description": "Bad Request - see error code and description for reason.  Valid error code values are\n  4000 - Income Source not found\n  4001 - Submission Period not found\n  4002 - Income Source Data Item not found",
+            "schema": {
+              "$ref": "#/definitions/errorResponse"
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity - see error code and description for reason.  Valid error code values are\n  4014 - Both consolidated expenses and full breakdown of expenses supplied\n  4015 - Year-to-date turnover exceeds the consolidated expenses threshold\n  4016 - Class 4 NICs exemption reason not supplied\n  4017 - Class 4 NICs exemption reason supplied without exemption indicator\n  4018 - Class 4 Exemption Under State Pension Age at the start of current tax year\n  4019 - Class 4 Exemption Over 16 years old at the start of current tax year",
+            "schema": {
+              "$ref": "#/definitions/errorResponse"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Self-Employment",
+          "External"
+        ],
+        "summary": "Get Self-Employment Period (API#41)",
+        "description": "Gets a Self-Employment Period and the corresponding submission data for an Income Source",
+        "operationId": "getSelfEmploymentPeriod",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/parameters/taxableEntityId"
+          },
+          {
+            "$ref": "#/parameters/incomeSourceId"
+          },
+          {
+            "$ref": "#/parameters/ibdSubmissionPeriodId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/selfEmploymentPeriodAndAnnualsWithDates"
+            }
+          },
+          "400": {
+            "description": "Bad Request - see error code and description for reason.  Valid error code values are\n  4006 - Invalid input parameter",
+            "schema": {
+              "$ref": "#/definitions/errorResponse"
+            }
+          },
+          "404": {
+            "description": "Bad Request - see error code and description for reason.  Valid error code values are\n  4000 - Income Source not found\n  4001 - Submission Period not found\n  4002 - Income Source Data Item not found",
+            "schema": {
+              "$ref": "#/definitions/errorResponse"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/ibd-submission-periods/properties/uk/other/{taxableEntityId}": {
+      "post": {
+        "tags": [
+          "UK Other Property",
+          "External"
+        ],
+        "summary": "Creates UK Other Property Period (API#30)",
+        "description": "Creates UK Other Property Period and the corresponding submission data for an Income Source",
+        "operationId": "postUkOtherPropertyPeriod",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/parameters/taxableEntityId"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Details of the data being submitted",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ukOtherPropertyPeriodAndAnnualsWithDates"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "schema": {
+              "$ref": "#/definitions/ibdSubmissionPeriodId"
+            }
+          },
+          "400": {
+            "description": "Bad Request - see error code and description for reason.  Valid error code values are\n  4006 - Invalid input parameter\n  4007 - Missing input parameter\n  4008 - The Period and Annual objects cannot be provided together in the request body",
+            "schema": {
+              "$ref": "#/definitions/errorResponse"
+            }
+          },
+          "404": {
+            "description": "Bad Request - see error code and description for reason.  Valid error code values are\n  4000 - Income Source not found",
+            "schema": {
+              "$ref": "#/definitions/errorResponse"
+            }
+          },
+          "409": {
+            "description": "Resource Conflict - see error code and description for reason.  Valid error code values are\n  4005 - Submission Period already exists",
+            "schema": {
+              "$ref": "#/definitions/errorResponse"
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity - see error code and description for reason.  Valid error code values are\n  4009 - Period Submitted Does Not Align To Accounting Period\n  4010 - Submission Period Includes Overlaps\n  4011 - Submission Period Includes Gaps\n  4012 - Submission Period Start Date Is After Submission Period End Date\n  4013 - The annual submission period start and end dates must match an accounting period's start and end dates",
+            "schema": {
+              "$ref": "#/definitions/errorResponse"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "UK Other Property",
+          "External"
+        ],
+        "summary": "Get UK Other Property Periods (API#43)",
+        "description": "Gets a list of UK Other Property Periods for a given Income Source",
+        "operationId": "getUkOtherPropertyPeriods",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/parameters/taxableEntityId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/ibdDataPeriod"
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request - see error code and description for reason.  Valid error code values are\n  4006 - Invalid input parameter",
+            "schema": {
+              "$ref": "#/definitions/errorResponse"
+            }
+          },
+          "404": {
+            "description": "Bad Request - see error code and description for reason.  Valid error code values are\n  4000 - Income Source not found",
+            "schema": {
+              "$ref": "#/definitions/errorResponse"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/ibd-submission-periods/properties/uk/other/{taxableEntityId}/{ibdSubmissionPeriodId}": {
+      "put": {
+        "tags": [
+          "UK Other Property",
+          "External"
+        ],
+        "summary": "Amends UK Other Property Period (API#34 API#32)",
+        "description": "Amends Uk Other Property Period and the corresponding submission data for an Income Source",
+        "operationId": "putUkOtherPropertyPeriod",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/parameters/taxableEntityId"
+          },
+          {
+            "$ref": "#/parameters/ibdSubmissionPeriodId"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Details of the data being submitted",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ukOtherPropertyPeriodAndAnnuals"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/ibdSubmissionPeriodId"
+            }
+          },
+          "400": {
+            "description": "Bad Request - see error code and description for reason.  Valid error code values are\n  4006 - Invalid input parameter\n  4007 - Missing input parameter\n  4008 - The Period and Annual objects cannot be provided together in the request body",
+            "schema": {
+              "$ref": "#/definitions/errorResponse"
+            }
+          },
+          "404": {
+            "description": "Bad Request - see error code and description for reason.  Valid error code values are\n  4000 - Income Source not found\n  4001 - Submission Period not found\n  4002 - Income Source Data Item not found",
+            "schema": {
+              "$ref": "#/definitions/errorResponse"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "UK Other Property",
+          "External"
+        ],
+        "summary": "Get Other UK Other Property Period (API#45 API#46)",
+        "description": "Gets UK Other Property Period and the corresponding submission data for an Income Source",
+        "operationId": "getUkOtherPropertyPeriod",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/parameters/taxableEntityId"
+          },
+          {
+            "$ref": "#/parameters/ibdSubmissionPeriodId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/ukOtherPropertyPeriodAndAnnualsWithDates"
+            }
+          },
+          "400": {
+            "description": "Bad Request - see error code and description for reason.  Valid error code values are\n  4006 - Invalid input parameter",
+            "schema": {
+              "$ref": "#/definitions/errorResponse"
+            }
+          },
+          "404": {
+            "description": "Bad Request - see error code and description for reason.  Valid error code values are\n  4000 - Income Source not found\n  4001 - Submission Period not found\n  4002 - Income Source Data Item not found",
+            "schema": {
+              "$ref": "#/definitions/errorResponse"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/ibd-submission-periods/properties/uk/fhl//{taxableEntityId}": {
+      "post": {
+        "tags": [
+          "UK FHL Property",
+          "External"
+        ],
+        "summary": "Creates UK FHL Property Period (API#30)",
+        "description": "Creates UK FHL Property Period and the corresponding submission data for an Income Source",
+        "operationId": "postUkFhlPropertyPeriod",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/parameters/taxableEntityId"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Details of the data being submitted",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ukFhlPropertyPeriodAndAnnualsWithDates"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "schema": {
+              "$ref": "#/definitions/ibdSubmissionPeriodId"
+            }
+          },
+          "400": {
+            "description": "Bad Request - see error code and description for reason.  Valid error code values are\n  4006 - Invalid input parameter\n  4007 - Missing input parameter\n  4008 - The Period and Annual objects cannot be provided together in the request body",
+            "schema": {
+              "$ref": "#/definitions/errorResponse"
+            }
+          },
+          "404": {
+            "description": "Bad Request - see error code and description for reason.  Valid error code values are\n  4000 - Income Source not found",
+            "schema": {
+              "$ref": "#/definitions/errorResponse"
+            }
+          },
+          "409": {
+            "description": "Resource Conflict - see error code and description for reason.  Valid error code values are\n  4005 - Submission Period already exists",
+            "schema": {
+              "$ref": "#/definitions/errorResponse"
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity - see error code and description for reason.  Valid error code values are\n  4009 - Period Submitted Does Not Align To Accounting Period\n  4010 - Submission Period Includes Overlaps\n  4011 - Submission Period Includes Gaps\n  4012 - Submission Period Start Date Is After Submission Period End Date\n  4013 - The annual submission period start and end dates must match an accounting period's start and end dates",
+            "schema": {
+              "$ref": "#/definitions/errorResponse"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "UK FHL Property",
+          "External"
+        ],
+        "summary": "Get UK FHL  Property Periods (API#43)",
+        "description": "Gets a list of UK FHL Property Periods for a given Income Source",
+        "operationId": "getUkFhlPeriods",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/parameters/taxableEntityId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/ibdDataPeriod"
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request - see error code and description for reason.  Valid error code values are\n  4006 - Invalid input parameter",
+            "schema": {
+              "$ref": "#/definitions/errorResponse"
+            }
+          },
+          "404": {
+            "description": "Bad Request - see error code and description for reason.  Valid error code values are\n  4000 - Income Source not found",
+            "schema": {
+              "$ref": "#/definitions/errorResponse"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/ibd-submission-periods/properties/uk/fhl/{taxableEntityId}/{ibdSubmissionPeriodId}": {
+      "put": {
+        "tags": [
+          "UK FHL Property"
+        ],
+        "summary": "Amends UK FHL Property Period (API#34 API#32)",
+        "description": "Amends Uk FHL Property Period and the corresponding submission data for an Income Source",
+        "operationId": "putUkFhlPropertyPeriod",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/parameters/taxableEntityId"
+          },
+          {
+            "$ref": "#/parameters/ibdSubmissionPeriodId"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Details of the data being submitted",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ukFhlPropertyPeriodAndAnnuals"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/ibdSubmissionPeriodId"
+            }
+          },
+          "400": {
+            "description": "Bad Request - see error code and description for reason.  Valid error code values are\n  4006 - Invalid input parameter\n  4007 - Missing input parameter\n  4008 - The Period and Annual objects cannot be provided together in the request body",
+            "schema": {
+              "$ref": "#/definitions/errorResponse"
+            }
+          },
+          "404": {
+            "description": "Bad Request - see error code and description for reason.  Valid error code values are\n  4000 - Income Source not found\n  4001 - Submission Period not found\n  4002 - Income Source Data Item not found",
+            "schema": {
+              "$ref": "#/definitions/errorResponse"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "UK FHL Property"
+        ],
+        "summary": "Get FHL Property Period (API#45 API#46)",
+        "description": "Gets FHL Property Period and the corresponding submission data for an Income Source",
+        "operationId": "getUkFhlPropertyPeriod",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/parameters/taxableEntityId"
+          },
+          {
+            "$ref": "#/parameters/ibdSubmissionPeriodId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/ukFhlPropertyPeriodAndAnnualsWithDates"
+            }
+          },
+          "400": {
+            "description": "Bad Request - see error code and description for reason.  Valid error code values are\n  4006 - Invalid input parameter",
+            "schema": {
+              "$ref": "#/definitions/errorResponse"
+            }
+          },
+          "404": {
+            "description": "Bad Request - see error code and description for reason.  Valid error code values are\n  4000 - Income Source not found\n  4001 - Submission Period not found\n  4002 - Income Source Data Item not found",
+            "schema": {
+              "$ref": "#/definitions/errorResponse"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/ibd-positions/{taxableEntityId}": {
+      "post": {
+        "tags": [
+          "IBD Position"
+        ],
+        "summary": "Create IBD Position",
+        "description": "Creates a new IBD Position for an individual for a list of income sources and stores the IBD Position.",
+        "operationId": "postIbdPosition",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/parameters/taxableEntityId"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Details required to create an IBD Position",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ibdPositionRequest"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "schema": {
+              "$ref": "#/definitions/ibdPositionResponse"
+            }
+          },
+          "400": {
+            "description": "Bad Request - see error code and description for reason.  Valid error code values are\n  4006 - Invalid input parameter\n  4007 - Missing input parameter",
+            "schema": {
+              "$ref": "#/definitions/errorResponse"
+            }
+          },
+          "404": {
+            "description": "Bad Request - see error code and description for reason.  Valid error code values are\n  4002 - Income Source Data Item not found\n  4003 - Income Source not found in IBD Position",
+            "schema": {
+              "$ref": "#/definitions/errorResponse"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/ibd-positions/{taxableEntityId}/{ibdPositionId}": {
+      "get": {
+        "tags": [
+          "IBD Position"
+        ],
+        "summary": "Get IBD Position",
+        "description": "Gets an existing IBD position",
+        "operationId": "getIbdPosition",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/parameters/taxableEntityId"
+          },
+          {
+            "$ref": "#/parameters/ibdPositionId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/ibdPositionResponse"
+            }
+          },
+          "400": {
+            "description": "Bad Request - see error code and description for reason.  Valid error code values are\n  4006 - Invalid input parameter",
+            "schema": {
+              "$ref": "#/definitions/errorResponse"
+            }
+          },
+          "404": {
+            "description": "Bad Request - see error code and description for reason.  Valid error code values are\n  4004 - IBD Position not found",
+            "schema": {
+              "$ref": "#/definitions/errorResponse"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/ibd-positions/{taxableEntityId}/{ibdPositionId}/income-sources/{incomeSourceId}/periods/{ibdSubmissionPeriodId}/versions": {
+      "get": {
+        "tags": [
+          "IBD Position"
+        ],
+        "summary": "Get all versions of a Period for an IBD Position",
+        "operationId": "getIbdPositionPeriodVersions",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/parameters/taxableEntityId"
+          },
+          {
+            "$ref": "#/parameters/ibdPositionId"
+          },
+          {
+            "$ref": "#/parameters/ibdSubmissionPeriodId"
+          },
+          {
+            "$ref": "#/parameters/incomeSourceId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/ibdPositionPeriodVersions"
+            }
+          },
+          "400": {
+            "description": "Bad Request - see error code and description for reason.  Valid error code values are\n  4006 - Invalid input parameter",
+            "schema": {
+              "$ref": "#/definitions/errorResponse"
+            }
+          },
+          "404": {
+            "description": "Bad Request - see error code and description for reason.  Valid error code values are\n  4001 - Submission Period not found\n  4004 - IBD Position not found",
+            "schema": {
+              "$ref": "#/definitions/errorResponse"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/ytd-positions/{taxableEntityId}": {
+      "post": {
+        "tags": [
+          "YTD Position"
+        ],
+        "summary": "Post a YTD Position",
+        "description": "Posts a request for a YTD position, which results in the creation and returning of a YTD position",
+        "operationId": "postYtdPosition",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/parameters/taxableEntityId"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "description": "YTD request",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ytdPositionRequest"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "schema": {
+              "$ref": "#/definitions/ytdPosition"
+            }
+          },
+          "400": {
+            "description": "Bad Request - see error code and description for reason.  Valid error code values are\n  4006 - Invalid input parameter\n  4007 - Missing input parameter",
+            "schema": {
+              "$ref": "#/definitions/errorResponse"
+            }
+          },
+          "404": {
+            "description": "Bad Request - see error code and description for reason.  Valid error code values are\n  4002 - Income Source Data Item not found",
+            "schema": {
+              "$ref": "#/definitions/errorResponse"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    }
+  },
+  "parameters": {
+    "taxableEntityId": {
+      "in": "path",
+      "name": "taxableEntityId",
+      "description": "ID for taxable entity",
+      "required": true,
+      "type": "string",
+      "maxLength": 9,
+      "pattern": "^([ACEHJLMOPRSWXY][A-CEGHJ-NPR-TW-Z]|B[A-CEHJ-NPR-TW-Z]|G[ACEGHJ-NPR-TW-Z]|[KT][A-CEGHJ-MPR-TW-Z]|N[A-CEGHJL-NPR-SW-Z]|Z[A-CEGHJ-NPR-TW-Y])[0-9]{6}[A-D ]?$"
+    },
+    "incomeSourceId": {
+      "in": "path",
+      "name": "incomeSourceId",
+      "description": "ID for an Income Source",
+      "required": true,
+      "type": "string",
+      "pattern": "^[A-Za-z0-9]{15}$"
+    },
+    "ibdSubmissionPeriodId": {
+      "in": "path",
+      "name": "ibdSubmissionPeriodId",
+      "description": "ID for an IBD Submission Period, this is currently the IBD Period Start Date + IBD Period End Date - Example '2018040620190405'",
+      "required": true,
+      "type": "string",
+      "pattern": "^[0-9]{16}$"
+    },
+    "ibdPositionId": {
+      "in": "path",
+      "name": "ibdPositionId",
+      "description": "ID for an IBD position",
+      "required": true,
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+    }
+  },
+  "definitions": {
+    "selfEmploymentPeriodAndAnnualsWithDates": {
+      "type": "object",
+      "properties": {
+        "selfEmploymentPeriodDates": {
+          "type": "object",
+          "required": [
+            "periodStartDate",
+            "periodEndDate",
+            "ibdSubmissionPeriodId"
+          ],
+          "properties": {
+            "periodStartDate": {
+              "type": "string",
+              "format": "date"
+            },
+            "periodEndDate": {
+              "type": "string",
+              "format": "date"
+            },
+            "ibdSubmissionPeriodId": {
+              "$ref": "#/definitions/ibdSubmissionPeriodId"
+            }
+          }
+        },
+        "selfEmploymentAnnual": {
+          "$ref": "#/definitions/selfEmploymentAnnual"
+        },
+        "selfEmploymentPeriodFinancials": {
+          "$ref": "#/definitions/selfEmploymentPeriodFinancials"
+        }
+      },
+      "required": [
+        "selfEmploymentPeriodDates"
+      ]
+    },
+    "selfEmploymentPeriodAndAnnuals": {
+      "type": "object",
+      "properties": {
+        "selfEmploymentAnnual": {
+          "$ref": "#/definitions/selfEmploymentAnnual"
+        },
+        "selfEmploymentPeriodFinancials": {
+          "$ref": "#/definitions/selfEmploymentPeriodFinancials"
+        }
+      }
+    },
+    "selfEmploymentAnnual": {
+      "type": "object",
+      "properties": {
+        "selfEmploymentAnnualAdjustments": {
+          "type": "object",
+          "properties": {
+            "includedNonTaxableProfits": {
+              "$ref": "#/definitions/positiveMoney"
+            },
+            "basisAdjustment": {
+              "$ref": "#/definitions/positiveOrNegativeMoney"
+            },
+            "overlapReliefUsed": {
+              "$ref": "#/definitions/positiveMoney"
+            },
+            "accountingAdjustment": {
+              "$ref": "#/definitions/positiveMoney"
+            },
+            "averagingAdjustment": {
+              "$ref": "#/definitions/positiveOrNegativeMoney"
+            },
+            "lossBroughtForward": {
+              "$ref": "#/definitions/positiveMoney"
+            },
+            "outstandingBusinessIncome": {
+              "$ref": "#/definitions/positiveMoney"
+            },
+            "balancingChargeBPRA": {
+              "$ref": "#/definitions/positiveMoney"
+            },
+            "balancingChargeOther": {
+              "$ref": "#/definitions/positiveMoney"
+            },
+            "goodAndServicesOwnUse": {
+              "$ref": "#/definitions/positiveMoney"
+            }
+          }
+        },
+        "selfEmploymentAnnualAllowances": {
+          "type": "object",
+          "properties": {
+            "annualInvestmentAllowance": {
+              "$ref": "#/definitions/positiveMoney"
+            },
+            "capitalAllowanceMainPool": {
+              "$ref": "#/definitions/positiveMoney"
+            },
+            "capitalAllowanceSpecialRatePool": {
+              "$ref": "#/definitions/positiveMoney"
+            },
+            "zeroEmmissionGoods": {
+              "$ref": "#/definitions/positiveMoney"
+            },
+            "businessPremisesRennovationAllowance": {
+              "$ref": "#/definitions/positiveMoney"
+            },
+            "enhancedCapitalAllowance": {
+              "$ref": "#/definitions/positiveMoney"
+            },
+            "allowanceOnSales": {
+              "$ref": "#/definitions/positiveMoney"
+            },
+            "capitalAllowanceSingleAssetPool": {
+              "$ref": "#/definitions/positiveMoney"
+            }
+          }
+        },
+        "selfEmploymentAnnualNonFinancials": {
+          "type": "object",
+          "properties": {
+            "businessDetailsChangedRecently": {
+              "type": "boolean"
+            },
+            "payClass2Nics": {
+              "type": "boolean"
+            },
+            "exemptFromPayClass4Nics": {
+              "type": "boolean"
+            },
+            "class4NicsExemptionReason": {
+              "description": "Nation tax regime at the period end\n  * 001 – Non Resident\n  * 002 - Trustee\n  * 003 - Diver\n  * 004 – Employed earner taxed under ITTOIA 2005\n  * 005 – Over state pension age\n  * 006 – Under 16\n",
+              "type": "string",
+              "enum": [
+                "001",
+                "002",
+                "003",
+                "004",
+                "005",
+                "006"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "selfEmploymentPeriodFinancials": {
+      "type": "object",
+      "properties": {
+        "selfEmploymentPeriodIncome": {
+          "type": "object",
+          "properties": {
+            "turnover": {
+              "$ref": "#/definitions/positiveMoney"
+            },
+            "other": {
+              "$ref": "#/definitions/positiveMoney"
+            }
+          }
+        },
+        "selfEmploymentPeriodDeductions": {
+          "type": "object",
+          "properties": {
+            "consolidatedExpenses": {
+              "$ref": "#/definitions/positiveMoney"
+            },
+            "costOfGoods": {
+              "$ref": "#/definitions/positiveOrNegativeAmountDisallowableAmountPair"
+            },
+            "constructionIndustryScheme": {
+              "$ref": "#/definitions/posAmountDisallowableAmountPair"
+            },
+            "staffCosts": {
+              "$ref": "#/definitions/posAmountDisallowableAmountPair"
+            },
+            "travelCosts": {
+              "$ref": "#/definitions/posAmountDisallowableAmountPair"
+            },
+            "premisesRunningCosts": {
+              "$ref": "#/definitions/positiveOrNegativeAmountDisallowableAmountPair"
+            },
+            "maintenanceCosts": {
+              "$ref": "#/definitions/positiveOrNegativeAmountDisallowableAmountPair"
+            },
+            "adminCosts": {
+              "$ref": "#/definitions/posAmountDisallowableAmountPair"
+            },
+            "businessEntertainmentCosts": {
+              "$ref": "#/definitions/posAmountDisallowableAmountPair"
+            },
+            "advertisingCosts": {
+              "$ref": "#/definitions/posAmountDisallowableAmountPair"
+            },
+            "interest": {
+              "$ref": "#/definitions/positiveOrNegativeAmountDisallowableAmountPair"
+            },
+            "financialCharges": {
+              "$ref": "#/definitions/positiveOrNegativeAmountDisallowableAmountPair"
+            },
+            "badDebt": {
+              "$ref": "#/definitions/positiveOrNegativeAmountDisallowableAmountPair"
+            },
+            "professionalFees": {
+              "$ref": "#/definitions/positiveOrNegativeAmountDisallowableAmountPair"
+            },
+            "depreciation": {
+              "$ref": "#/definitions/positiveAmountPositiveOrNegativeDisallowableAmountPair"
+            },
+            "other": {
+              "$ref": "#/definitions/posAmountDisallowableAmountPair"
+            }
+          }
+        }
+      }
+    },
+    "ukOtherPropertyPeriodAndAnnualsWithDates": {
+      "type": "object",
+      "properties": {
+        "ukOtherPropertyPeriodDates": {
+          "type": "object",
+          "required": [
+            "periodStartDate",
+            "periodEndDate",
+            "ibdSubmissionPeriodId"
+          ],
+          "properties": {
+            "periodStartDate": {
+              "type": "string",
+              "format": "date"
+            },
+            "periodEndDate": {
+              "type": "string",
+              "format": "date"
+            },
+            "ibdSubmissionPeriodId": {
+              "$ref": "#/definitions/ibdSubmissionPeriodId"
+            }
+          }
+        },
+        "ukOtherPropertyAnnual": {
+          "$ref": "#/definitions/ukOtherPropertyAnnual"
+        },
+        "ukOtherPropertyPeriod": {
+          "$ref": "#/definitions/ukOtherPropertyPeriod"
+        }
+      },
+      "required": [
+        "ukOtherPropertyPeriodDates"
+      ]
+    },
+    "ukOtherPropertyPeriodAndAnnuals": {
+      "type": "object",
+      "properties": {
+        "ukOtherPropertyAnnual": {
+          "$ref": "#/definitions/ukOtherPropertyAnnual"
+        },
+        "ukOtherPropertyPeriod": {
+          "$ref": "#/definitions/ukOtherPropertyPeriod"
+        }
+      }
+    },
+    "ukOtherPropertyAnnual": {
+      "type": "object",
+      "properties": {
+        "ukOtherPropertyAnnualAdjustments": {
+          "type": "object",
+          "properties": {
+            "lossBroughtForward": {
+              "$ref": "#/definitions/positiveMoney"
+            },
+            "balancingCharge": {
+              "$ref": "#/definitions/positiveMoney"
+            },
+            "privateUseAdjustment": {
+              "$ref": "#/definitions/positiveMoney"
+            }
+          }
+        },
+        "ukOtherPropertyAnnualAllowances": {
+          "type": "object",
+          "properties": {
+            "annualInvestmentAllowance": {
+              "$ref": "#/definitions/positiveMoney"
+            },
+            "zeroEmissionGoodsVehicleAllowance": {
+              "$ref": "#/definitions/positiveMoney"
+            },
+            "businessPremisesRenovationAllowance": {
+              "$ref": "#/definitions/positiveMoney"
+            },
+            "businessOtherCapitalAllowance": {
+              "$ref": "#/definitions/positiveMoney"
+            },
+            "otherCapitalAllowance": {
+              "$ref": "#/definitions/positiveMoney"
+            },
+            "costOfReplacingDomesticGoods": {
+              "$ref": "#/definitions/positiveMoney"
+            }
+          }
+        }
+      }
+    },
+    "ukOtherPropertyPeriod": {
+      "type": "object",
+      "properties": {
+        "ukOtherPropertyPeriodIncome": {
+          "type": "object",
+          "properties": {
+            "premiumsOfLeaseGrant": {
+              "$ref": "#/definitions/positiveMoney"
+            },
+            "reversePremiums": {
+              "$ref": "#/definitions/positiveMoney"
+            },
+            "periodAmount": {
+              "$ref": "#/definitions/positiveMoney"
+            },
+            "taxDeducted": {
+              "$ref": "#/definitions/positiveMoney"
+            },
+            "otherIncome": {
+              "$ref": "#/definitions/positiveMoney"
+            }
+          }
+        },
+        "ukOtherPropertyPeriodDeductions": {
+          "type": "object",
+          "properties": {
+            "premisesRunningCosts": {
+              "$ref": "#/definitions/positiveMoney"
+            },
+            "repairsAndMaintenance": {
+              "$ref": "#/definitions/positiveMoney"
+            },
+            "financialCosts": {
+              "$ref": "#/definitions/positiveMoney"
+            },
+            "professionalFees": {
+              "$ref": "#/definitions/positiveMoney"
+            },
+            "costOfServices": {
+              "$ref": "#/definitions/positiveMoney"
+            },
+            "other": {
+              "$ref": "#/definitions/positiveMoney"
+            },
+            "consolidatedExpenses": {
+              "$ref": "#/definitions/positiveMoney"
+            },
+            "residentialFinancialCost": {
+              "$ref": "#/definitions/positiveMoney"
+            }
+          }
+        }
+      }
+    },
+    "ukFhlPropertyPeriodAndAnnualsWithDates": {
+      "type": "object",
+      "properties": {
+        "ukFhlPropertyPeriodDates": {
+          "type": "object",
+          "required": [
+            "periodStartDate",
+            "periodEndDate",
+            "ibdSubmissionPeriodId"
+          ],
+          "properties": {
+            "periodStartDate": {
+              "type": "string",
+              "format": "date"
+            },
+            "periodEndDate": {
+              "type": "string",
+              "format": "date"
+            },
+            "ibdSubmissionPeriodId": {
+              "$ref": "#/definitions/ibdSubmissionPeriodId"
+            }
+          }
+        },
+        "ukFhlPropertyAnnual": {
+          "$ref": "#/definitions/ukFhlPropertyAnnual"
+        },
+        "ukFhlPropertyPeriod": {
+          "$ref": "#/definitions/ukFhlPropertyPeriod"
+        }
+      },
+      "required": [
+        "ukFhlPropertyPeriodDates"
+      ]
+    },
+    "ukFhlPropertyPeriodAndAnnuals": {
+      "type": "object",
+      "properties": {
+        "ukFhlPropertyAnnual": {
+          "$ref": "#/definitions/ukFhlPropertyAnnual"
+        },
+        "ukFhlPropertyPeriod": {
+          "$ref": "#/definitions/ukFhlPropertyPeriod"
+        }
+      }
+    },
+    "ukFhlPropertyAnnual": {
+      "type": "object",
+      "properties": {
+        "ukFhlPropertyAnnualAdjustments": {
+          "type": "object",
+          "properties": {
+            "lossBroughtForward": {
+              "$ref": "#/definitions/positiveMoney"
+            },
+            "privateUseAdjustment": {
+              "$ref": "#/definitions/positiveMoney"
+            },
+            "balancingCharge": {
+              "$ref": "#/definitions/positiveMoney"
+            },
+            "periodOfGraceAdjustment": {
+              "$ref": "#/definitions/positiveMoney"
+            }
+          }
+        },
+        "ukFhlPropertyAnnualAllowances": {
+          "type": "object",
+          "properties": {
+            "annualInvestmentAllowance": {
+              "$ref": "#/definitions/positiveMoney"
+            },
+            "zeroEmissionGoodsVehicleAllowance": {
+              "$ref": "#/definitions/positiveMoney"
+            },
+            "businessPremisesRenovationAllowance": {
+              "$ref": "#/definitions/positiveMoney"
+            },
+            "businessOtherCapitalAllowance": {
+              "$ref": "#/definitions/positiveMoney"
+            },
+            "otherCapitalAllowance": {
+              "$ref": "#/definitions/positiveMoney"
+            },
+            "costOfReplacingDomesticGoods": {
+              "$ref": "#/definitions/positiveMoney"
+            }
+          }
+        }
+      }
+    },
+    "ukFhlPropertyPeriod": {
+      "type": "object",
+      "properties": {
+        "ukFhlPropertyPeriodIncome": {
+          "type": "object",
+          "properties": {
+            "premiumsOfLeaseGrant": {
+              "$ref": "#/definitions/positiveMoney"
+            },
+            "reversePremiums": {
+              "$ref": "#/definitions/positiveMoney"
+            },
+            "periodAmount": {
+              "$ref": "#/definitions/positiveMoney"
+            },
+            "taxDeducted": {
+              "$ref": "#/definitions/positiveMoney"
+            }
+          }
+        },
+        "ukFhlPropertPeriodDeductions": {
+          "type": "object",
+          "properties": {
+            "premisesRunningCosts": {
+              "$ref": "#/definitions/positiveMoney"
+            },
+            "repairsAndMaintenance": {
+              "$ref": "#/definitions/positiveMoney"
+            },
+            "financialCosts": {
+              "$ref": "#/definitions/positiveMoney"
+            },
+            "professionalFees": {
+              "$ref": "#/definitions/positiveMoney"
+            },
+            "costOfServices": {
+              "$ref": "#/definitions/positiveMoney"
+            },
+            "other": {
+              "$ref": "#/definitions/positiveMoney"
+            },
+            "consolidatedExpenses": {
+              "$ref": "#/definitions/positiveMoney"
+            }
+          }
+        }
+      }
+    },
+    "ibdPositionRequest": {
+      "type": "object",
+      "required": [
+        "incomeSources"
+      ],
+      "properties": {
+        "calcId": {
+          "$ref": "#/definitions/calcId"
+        },
+        "incomeSources": {
+          "type": "array",
+          "items": {
+            "required": [
+              "incomeSourceId",
+              "incomeSourceType",
+              "periodStartDate",
+              "periodEndDate"
+            ],
+            "properties": {
+              "incomeSourceId": {
+                "type": "string",
+                "description": "The unique identifier of the income source",
+                "pattern": "^[A-Za-z0-9]{15}$"
+              },
+              "incomeSourceType": {
+                "$ref": "#/definitions/incomeSourceType"
+              },
+              "periodStartDate": {
+                "type": "string",
+                "description": "The start date of the period of time this position will be limited to (e.g. Accounting Period). Optional.",
+                "format": "date"
+              },
+              "periodEndDate": {
+                "type": "string",
+                "description": "The start date of the period of time this position will be limited to (e.g. Accounting Period). Optional.",
+                "format": "date"
+              }
+            }
+          }
+        }
+      }
+    },
+    "ibdPositionResponse": {
+      "type": "object",
+      "properties": {
+        "taxableEntityId": {
+          "type": "string",
+          "description": "The ID of the taxable entity"
+        },
+        "calcId": {
+          "$ref": "#/definitions/calcId"
+        },
+        "ibdPositionId": {
+          "$ref": "#/definitions/ibdPositionId"
+        },
+        "timeStamp": {
+          "type": "string",
+          "description": "Time Stamp of when the IBD Position was created"
+        },
+        "selfEmploymentIncomeSources": {
+          "type": "array",
+          "items": {
+            "required": [
+              "incomeSourceId"
+            ],
+            "properties": {
+              "incomeSourceId": {
+                "type": "string",
+                "description": "The unique identifier of the income source",
+                "pattern": "^[A-Za-z0-9]{15}$"
+              },
+              "selfEmploymentPeriods": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/selfEmploymentPeriodAndAnnualsWithDates"
+                }
+              }
+            }
+          }
+        },
+        "ukFhlPropertyIncomeSources": {
+          "type": "object",
+          "required": [
+            "incomeSourceId"
+          ],
+          "properties": {
+            "incomeSourceId": {
+              "type": "string",
+              "description": "The unique identifier of the income source",
+              "pattern": "^[A-Za-z0-9]{15}$"
+            },
+            "ukFhlPropertyPeriods": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/ukFhlPropertyPeriodAndAnnualsWithDates"
+              }
+            }
+          }
+        },
+        "ukOtherPropertyPeriodIncomeSources": {
+          "type": "object",
+          "required": [
+            "incomeSourceId"
+          ],
+          "properties": {
+            "incomeSourceId": {
+              "type": "string",
+              "description": "The unique identifier of the income source",
+              "pattern": "^[A-Za-z0-9]{15}$"
+            },
+            "ukOtherPropertyPeriods": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/ukOtherPropertyPeriodAndAnnualsWithDates"
+              }
+            }
+          }
+        }
+      }
+    },
+    "ibdPositionPeriodVersions": {
+      "type": "object",
+      "properties": {
+        "selfEmploymentPeriodVersions": {
+          "type": "object",
+          "properties": {
+            "startDate": {
+              "type": "string",
+              "format": "date"
+            },
+            "endDate": {
+              "type": "string",
+              "format": "date"
+            },
+            "selfEmploymentPeriodAndAnnualVersions": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/selfEmploymentPeriodAndAnnualVersions"
+              }
+            }
+          }
+        },
+        "ukOtherPropertyPeriodVersions": {
+          "type": "object",
+          "properties": {
+            "startDate": {
+              "type": "string",
+              "format": "date"
+            },
+            "endDate": {
+              "type": "string",
+              "format": "date"
+            },
+            "ukOtherPropertyPeriodAndAnnualVersions": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/ukOtherPropertyPeriodAndAnnualVersions"
+              }
+            }
+          }
+        },
+        "ukFhlPropertyPeriodVersions": {
+          "type": "object",
+          "properties": {
+            "startDate": {
+              "type": "string",
+              "format": "date"
+            },
+            "endDate": {
+              "type": "string",
+              "format": "date"
+            },
+            "ukFhlPropertyPeriodAndAnnualVersions": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/ukFhlPropertyPeriodAndAnnualVersions"
+              }
+            }
+          }
+        }
+      }
+    },
+    "selfEmploymentPeriodAndAnnualVersions": {
+      "type": "object",
+      "properties": {
+        "timeStamp": {
+          "type": "string",
+          "description": "Time Stamp of when the Position was created",
+          "format": "date-time"
+        },
+        "selfEmploymentAnnual": {
+          "$ref": "#/definitions/selfEmploymentAnnual"
+        },
+        "selfEmploymentPeriodFinancials": {
+          "$ref": "#/definitions/selfEmploymentPeriodFinancials"
+        }
+      }
+    },
+    "ukOtherPropertyPeriodAndAnnualVersions": {
+      "type": "object",
+      "properties": {
+        "timeStamp": {
+          "type": "string",
+          "description": "Time Stamp of when the Position was created",
+          "format": "date-time"
+        },
+        "ukOtherPropertyAnnual": {
+          "$ref": "#/definitions/ukOtherPropertyAnnual"
+        },
+        "ukOtherPropertyPeriod": {
+          "$ref": "#/definitions/ukOtherPropertyPeriod"
+        }
+      }
+    },
+    "ukFhlPropertyPeriodAndAnnualVersions": {
+      "type": "object",
+      "properties": {
+        "timeStamp": {
+          "type": "string",
+          "description": "Time Stamp of when the Position was created",
+          "format": "date-time"
+        },
+        "ukFhlPropertyAnnual": {
+          "$ref": "#/definitions/ukFhlPropertyAnnual"
+        },
+        "ukFhlPropertyPeriod": {
+          "$ref": "#/definitions/ukFhlPropertyPeriod"
+        }
+      }
+    },
+    "ytdPositionRequest": {
+      "description": "A request for a YTD position - consists of a list of Income Sources that will be included in the YTD position",
+      "type": "object",
+      "required": [
+        "ytdIncomeSourceRequests"
+      ],
+      "properties": {
+        "ytdIncomeSourceRequests": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ytdIncomeSourceRequest"
+          }
+        }
+      }
+    },
+    "ytdIncomeSourceRequest": {
+      "description": "A request for an Income Source to be included in a YTD position",
+      "type": "object",
+      "required": [
+        "incomeSourceId",
+        "incomeSourceType",
+        "from",
+        "to"
+      ],
+      "properties": {
+        "incomeSourceId": {
+          "$ref": "#/definitions/incomeSourceId"
+        },
+        "incomeSourceType": {
+          "$ref": "#/definitions/incomeSourceType"
+        },
+        "from": {
+          "description": "A start date in an Income Source Period from which IBD Periods will be retrieved",
+          "type": "string",
+          "format": "date"
+        },
+        "to": {
+          "description": "An end date in an Income Source Period which IBD Periods will be retrieved",
+          "type": "string",
+          "format": "date"
+        }
+      }
+    },
+    "ytdPosition": {
+      "description": "A YTD Position, which can include multiple Income Source Periods for multiple Income Sources",
+      "type": "object",
+      "properties": {
+        "taxableEntityId": {
+          "$ref": "#/definitions/taxableEntityId"
+        },
+        "ytdPositionId": {
+          "$ref": "#/definitions/ytdPositionId"
+        },
+        "ibdPositionId": {
+          "$ref": "#/definitions/ibdPositionId"
+        },
+        "timeStamp": {
+          "description": "The time the YTD position was created",
+          "type": "string",
+          "format": "date-time"
+        },
+        "selfEmploymentYtds": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/selfEmploymentYtd"
+          }
+        },
+        "ukFhlPropertyYtds": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ukFhlPropertyYtd"
+          }
+        },
+        "ukOtherPropertyYtds": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ukOtherPropertyYtd"
+          }
+        }
+      }
+    },
+    "ukOtherPropertyYtd": {
+      "description": "A subset YTD position for a particular UK Other Property Income Source Period",
+      "type": "object",
+      "properties": {
+        "incomeSourceId": {
+          "$ref": "#/definitions/incomeSourceId"
+        },
+        "from": {
+          "description": "A start date in an Income Source Period from which IBD Periods will be retrieved",
+          "type": "string",
+          "format": "date"
+        },
+        "to": {
+          "description": "An end date in an Income Source Period which IBD Periods will be retrieved",
+          "type": "string",
+          "format": "date"
+        },
+        "ukOtherPropertyPeriodAndAnnuals": {
+          "$ref": "#/definitions/ukOtherPropertyPeriodAndAnnuals"
+        }
+      },
+      "required": [
+        "incomeSourceId from to"
+      ]
+    },
+    "ukFhlPropertyYtd": {
+      "description": "A subset YTD position for a particular UK FHL Property Income Source Period",
+      "type": "object",
+      "properties": {
+        "incomeSourceId": {
+          "$ref": "#/definitions/incomeSourceId"
+        },
+        "from": {
+          "description": "A start date in an Income Source Period from which IBD Periods will be retrieved",
+          "type": "string",
+          "format": "date"
+        },
+        "to": {
+          "description": "An end date in an Income Source Period which IBD Periods will be retrieved",
+          "type": "string",
+          "format": "date"
+        },
+        "ukFhlPropertyPeriodAndAnnuals": {
+          "$ref": "#/definitions/ukFhlPropertyPeriodAndAnnuals"
+        }
+      },
+      "required": [
+        "incomeSourceId from to"
+      ]
+    },
+    "selfEmploymentYtd": {
+      "description": "A subset YTD position for a particular Self-Employment Income Source Period",
+      "type": "object",
+      "properties": {
+        "incomeSourceId": {
+          "$ref": "#/definitions/incomeSourceId"
+        },
+        "from": {
+          "description": "A start date in an Income Source Period from which IBD Periods will be retrieved",
+          "type": "string",
+          "format": "date"
+        },
+        "to": {
+          "description": "An end date in an Income Source Period which IBD Periods will be retrieved",
+          "type": "string",
+          "format": "date"
+        },
+        "selfEmploymentPeriodAndAnnuals": {
+          "$ref": "#/definitions/selfEmploymentPeriodAndAnnuals"
+        }
+      },
+      "required": [
+        "incomeSourceId from to"
+      ]
+    },
+    "ibdDataPeriod": {
+      "type": "object",
+      "properties": {
+        "ibdSubmissionPeriodId": {
+          "type": "string"
+        },
+        "periodStartDate": {
+          "type": "string",
+          "format": "date"
+        },
+        "periodEndDate": {
+          "type": "string",
+          "format": "date"
+        }
+      }
+    },
+    "incomeSourceId": {
+      "description": "ID for an Income Source",
+      "type": "string",
+      "pattern": "^[A-Za-z0-9]{15}$"
+    },
+    "taxableEntityId": {
+      "description": "ID for taxable entity",
+      "type": "string",
+      "maxLength": 9,
+      "format": "^([ACEHJLMOPRSWXY][A-CEGHJ-NPR-TW-Z]|B[A-CEHJ-NPR-TW-Z]|G[ACEGHJ-NPR-TW-Z]|[KT][A-CEGHJ-MPR-TW-Z]|N[A-CEGHJL-NPR-SW-Z]|Z[A-CEGHJ-NPR-TW-Y])[0-9]{6}[A-D ]?$"
+    },
+    "ytdPositionId": {
+      "description": "ID for a YTD Position",
+      "type": "string",
+      "format": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+    },
+    "ibdPositionId": {
+      "description": "ID for a IDB Position",
+      "type": "string",
+      "format": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+    },
+    "ibdSubmissionPeriodId": {
+      "description": "Period ID for the Period Posted",
+      "type": "string",
+      "pattern": "^[0-9]{16}$"
+    },
+    "calcId": {
+      "description": "ID for a Liability Calculation",
+      "type": "string",
+      "format": "^[0-9]{8}|[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+    },
+    "incomeSourceType": {
+      "description": "Indicates the income source type. Values are - 01=Self-Employment, 02=UK Property, 04=UK FHL Property.",
+      "type": "string",
+      "enum": [
+        1,
+        2,
+        4
+      ]
+    },
+    "errorResponse": {
+      "description": "Error Response for IBD Store",
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/error"
+      }
+    },
+    "error": {
+      "type": "object",
+      "required": [
+        "errorCode",
+        "errorDescription"
+      ],
+      "properties": {
+        "errorCode": {
+          "type": "string",
+          "description": "The error code representing the error that has occurred. Valid values are\n  4000 - Income Source not found;\n  4001 - Submission Period not found;\n  4002 - Income Source Data Item not found;\n  4003 - Income Source not found in IBD Position;\n  4004 - IBD Position not found;\n  4005 - Submission Period already exists;\n  4006 - Invalid input parameter;\n  4007 - Missing input parameter;\n  4008 - The Period and Annual objects cannot be provided together in the request body;\n  4009 - Period Submitted Does Not Align To Accounting Period;\n  4010 - Submission Period Includes Overlaps;\n  4011 - Submission Period Includes Gaps\n  4012 - Submission Period Start Date Is After Submission Period End Date;\n  4013 - The annual submission period start and end dates must match an accounting period's start and end dates;\n  4014 - Both consolidated expenses and full breakdown of expenses supplied;\n  4015 - Year-to-date turnover exceeds the consolidated expenses threshold;\n  4016 - Class 4 NICs exemption reason not supplied;\n  4017 - Class 4 NICs exemption reason supplied without exemption indicator;\n  4018 - Class 4 Exemption Under State Pension Age at the start of current tax year;\n  4019 - Class 4 Exemption Over 16 years old at the start of current tax year;",
+          "enum": [
+            "4000",
+            "4001",
+            "4002",
+            "4003",
+            "4004",
+            "4005",
+            "4006",
+            "4007",
+            "4008",
+            "4009",
+            "4010",
+            "4011",
+            "4012",
+            "4013",
+            "4014",
+            "4015",
+            "4016",
+            "4017",
+            "4018",
+            "4019"
+          ]
+        },
+        "errorDescription": {
+          "type": "string",
+          "description": "The textual description of the error."
+        }
+      }
+    },
+    "invalidInputParameter": {
+      "description": "Bad Request error response - Invalid input parameter.",
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string",
+          "enum": [
+            "Bad Request"
+          ]
+        },
+        "error": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "Invalid input parameter"
+            ]
+          }
+        }
+      },
+      "required": [
+        "message",
+        "error"
+      ]
+    },
+    "missingInputParameter": {
+      "description": "Bad Request error response - Missing input parameter. The parameter that is missing will also be supplied as part of this response.",
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string",
+          "enum": [
+            "Bad Request"
+          ]
+        },
+        "error": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "Missing input parameter"
+            ]
+          }
+        }
+      },
+      "required": [
+        "message",
+        "error"
+      ]
+    },
+    "invalidRequestBody": {
+      "description": "Bad Request error response - Periodic and Annual objects cannot be provided together.",
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string",
+          "enum": [
+            "Bad Request"
+          ]
+        },
+        "error": {
+          "type": "string",
+          "enum": [
+            "The Period and Annual objects cannot be provided together in the request body"
+          ]
+        }
+      },
+      "required": [
+        "message",
+        "error"
+      ]
+    },
+    "unprocessableEntityPriorityBVR": {
+      "description": "Unprocessable Entity error response - 'Priority BVRs'.",
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string",
+          "enum": [
+            "Unprocessable Entity"
+          ]
+        },
+        "errors": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "Period Submitted Does Not Align To Accounting Period",
+              "Submission Period Includes Gaps",
+              "Submission Period Includes Overlaps",
+              "Submission Period Start Date Is After Submission Period End Date"
+            ]
+          }
+        }
+      },
+      "required": [
+        "message",
+        "errors"
+      ]
+    },
+    "unprocessableEntityDatesDoNotMatch": {
+      "description": "Unprocessable Entity error response - 'The annual submission period start and end dates must match an accounting period's start and end dates'.",
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string",
+          "enum": [
+            "Unprocessable Entity"
+          ]
+        },
+        "error": {
+          "type": "string",
+          "enum": [
+            "The annual submission period start and end dates must match an accounting period's start and end dates"
+          ]
+        }
+      },
+      "required": [
+        "message",
+        "error"
+      ]
+    },
+    "unprocessableEntityConsolidatedExpBVR": {
+      "description": "Unprocessable Entity error response - 'Consolidated Expenses BVRs'.",
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string",
+          "enum": [
+            "Unprocessable Entity"
+          ]
+        },
+        "errors": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "Both consolidated expenses and full breakdown of expenses supplied",
+              "Year-to-date turnover exceeds the consolidated expenses threshold"
+            ]
+          }
+        }
+      },
+      "required": [
+        "message",
+        "errors"
+      ]
+    },
+    "unprocessableEntityClass4BVR": {
+      "description": "Unprocessable Entity error response - 'Class 4 BVRs'.",
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string",
+          "enum": [
+            "Unprocessable Entity"
+          ]
+        },
+        "errors": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "Class 4 NICs exemption reason not supplied",
+              "Class 4 NICs exemption reason supplied without exemption indicator",
+              "Class 4 Exemption: Under State Pension Age at the start of current tax year",
+              "Class 4 Exemption: Over 16 years old at the start of current tax year"
+            ]
+          }
+        }
+      },
+      "required": [
+        "message",
+        "errors"
+      ]
+    },
+    "incomeSourceNotFound": {
+      "description": "Business error not found response for the Income Source not found scenario.",
+      "type": "string",
+      "format": "Income Source not found"
+    },
+    "submissionPeriodNotFound": {
+      "description": "Business error not found response for the Submission Period not found scenario.",
+      "type": "string",
+      "format": "Submission Period not found"
+    },
+    "incomeSourceDataItemNotFound": {
+      "description": "Business error not found response - Income Source Data Item not found.",
+      "type": "string",
+      "format": "Income Source Data Item not found"
+    },
+    "incomeSourceInPositionNotFound": {
+      "description": "Business error not found response - Income Source not found in IBD Position.",
+      "type": "string",
+      "format": "Income Source not found in IBD Position"
+    },
+    "ibdPositionNotFound": {
+      "description": "Business error not found response for the IBD Position not found scenario",
+      "type": "string",
+      "format": "IBD Position not found"
+    },
+    "resourceConflict": {
+      "description": "Resource conflict code",
+      "type": "string",
+      "format": "Submission Period already exists"
+    },
+    "positiveMoney": {
+      "description": "positive money",
+      "type": "number",
+      "format": "double",
+      "minimum": 0,
+      "maximum": 99999999999999.98,
+      "multipleOf": 0.01
+    },
+    "positiveOrNegativeMoney": {
+      "description": "positive or negative money",
+      "type": "number",
+      "format": "double",
+      "minimum": -99999999999999.98,
+      "maximum": 99999999999999.98,
+      "multipleOf": 0.01
+    },
+    "posAmountDisallowableAmountPair": {
+      "description": "utility object for deductions where by you must have a positive amount and disallowable amount pair.",
+      "type": "object",
+      "properties": {
+        "amount": {
+          "$ref": "#/definitions/positiveMoney"
+        },
+        "disallowableAmount": {
+          "$ref": "#/definitions/positiveMoney"
+        }
+      }
+    },
+    "positiveOrNegativeAmountDisallowableAmountPair": {
+      "description": "utility object for deductions where by you can have a positive or negative amount and disallowable amount pair.",
+      "type": "object",
+      "properties": {
+        "amount": {
+          "$ref": "#/definitions/positiveOrNegativeMoney"
+        },
+        "disallowableAmount": {
+          "$ref": "#/definitions/positiveOrNegativeMoney"
+        }
+      }
+    },
+    "positiveAmountPositiveOrNegativeDisallowableAmountPair": {
+      "description": "utility object for deductions where by you must only have a positive or negative amount and the disallowable amount must be positive.",
+      "type": "object",
+      "properties": {
+        "amount": {
+          "$ref": "#/definitions/positiveOrNegativeMoney"
+        },
+        "disallowableAmount": {
+          "$ref": "#/definitions/positiveMoney"
+        }
+      }
+    }
+  }
+}

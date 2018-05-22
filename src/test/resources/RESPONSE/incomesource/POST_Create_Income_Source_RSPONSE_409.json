@@ -1,0 +1,11 @@
+RESPONSE
+
+409 Conflict
+
+body: 
+
+{
+
+Income source ID already exists.
+
+}

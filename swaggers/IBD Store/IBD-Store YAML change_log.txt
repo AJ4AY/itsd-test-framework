@@ -1,0 +1,68 @@
+Version 1.0.a - Initial creation of merged Swagger Document following MTDfB Glossary Alignment.
+Author: Glen Barker	
+Date: 23/04/2018	
+Changes:	
+	Merged all IBD Store YAMLs into one 'IBD-Store' YAML. 
+	Merged all IBD Store APIs into one singular YAML
+	Expanded schemes to include HTTPS
+	Included the use of tags to group APIs and indicate if they are external
+	Included existing API numbers in the API summary
+	Refactored request/response structures to align with API Glossary (e.g. periodId -> ibdSubmissionPeriodId)
+	Refactored the context of the Self-Employment API Paths
+		- Removed versioning from the paths 
+		- Aligned field names (incomeSourceId, taxableEntityId)
+	Refactored the context of the UK Other Property API Paths
+		- Removed versioning from the paths
+		- Aligned field names (incomeSourceId, taxableEntityId, ibdSubmissionPeriodId)
+	Refactored the context of the UK FHL Property API Paths
+		- Removed versioning from the paths
+		- Aligned field names (incomeSourceId, taxableEntityId, ibdSubmissionPeriodId)
+	Refactored the context of the IBD Position API Paths
+		- Removed versioning from the paths
+		- Aligned field names (incomeSourceId, ibdPositionID, taxableEntityId, ibdSubmissionPeriodId)
+	Refactored the context of the YTD Position API Path
+		- Removed versioning from the paths
+		- Aligned field names (taxableEntityId)
+
+Version 1.0.b 
+Author: Glen Barker
+Date: 23/04/2018
+Changes:
+	Removed 'Accounting Period ID' and 'Income Source Period ID' as the IBD Store is no longer going to hold this concept. 
+
+Version 1.0.c 
+Author: Glen Barker
+Date: 25/04/2018
+Changes: 
+	Actioned review comments: removed HTTP and HTTPS from YAML. Updated ibd-position to be plural (ibd-positions).
+
+Version 1.0.d
+Author: Glen Barker
+Date: 25/04/2018
+Changes:
+	Included new positiveOrNegativeAmountDisallowableAmountPair and positiveAmountPositiveOrNegativeDisallowableAmountPair for some Self-Employment fields as per new requirements.
+
+Version 1.0.e
+Author: Glen Barker   
+Date: 25/04/2018
+Changes: 
+	Updated 400 and 404 response schemas to align with the 'as-is' functionality. 
+	Updated 'invalidInputParameter' and 'missingInputParameter' to reflect the error responses being returned. 
+	
+Version 1.0.f
+Author: Glen Barker   
+Date: 27/04/2018
+Changes: 
+	Refactored the error response(s) returned from IBD-Store to follow a pre-agreed error pattern as per the 'MTDfB Micro service glossary' call on 27/04/18.
+	Included new Self-Employment, UK-FHL Property and UK Other Property fields: 
+		- businessEntertainmentCosts within selfEmploymentPeriodDeductions, 
+		- capitalAllowanceSingleAssetPool to selfEmploymentAnnualAllowances,
+		- otherIncome to ukOtherPropertyPeriodIncome,
+		- consolidatedExpenses within ukOtherPropertyPeriodDeductions, 
+		- residentialFinancialCost within ukOtherPropertyPeriodDeductions
+		- consolidatedExpenses within ukFhlPropertPeriodDeductions,
+		- periodOfGraceAdjustment to ukFhlPropertyAnnualAdjustments
+	Remove 'incomeSourceId' from the UK-FHL and UK-Other API paths (this will now be retrieved from IBD Store via the existing call to ISS).
+	
+	
+	

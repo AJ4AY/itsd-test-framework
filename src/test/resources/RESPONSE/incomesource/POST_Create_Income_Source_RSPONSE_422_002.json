@@ -1,0 +1,17 @@
+RESPONSE
+
+422 Unprocessable Entity
+
+body: 
+
+{
+  "errorCode": "1001",
+  "errorDescription": "invalid accounting period",
+  "validationRuleFailures": [
+    {
+      "id": "BVR123",
+      "type": "ERR",
+      "text": "Message Text"
+    }
+  ]
+}

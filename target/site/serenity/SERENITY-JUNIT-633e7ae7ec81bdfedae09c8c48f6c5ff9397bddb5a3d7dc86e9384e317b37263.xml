@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?><testsuite errors="0" failures="1" name="Retrieveincomesourcedetails" skipped="0" tests="1" time="0.59" timestamp="2018-05-142 02:07:01"><testcase name="Retrieve income source for a valid taxEntityId"><failure message="1 expectation failed.&#10;Expected status code &lt;202&gt; but was &lt;409&gt;.&#10;" type="java.lang.AssertionError">1 expectation failed.
+Expected status code &lt;202&gt; but was &lt;409&gt;.
+</failure><system-err>1 expectation failed.
+Expected status code &lt;202&gt; but was &lt;409&gt;.
+&#13;
+java.base/jdk.internal.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)&#13;
+java.base/jdk.internal.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62)&#13;
+java.base/jdk.internal.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)&#13;
+io.restassured.internal.ResponseSpecificationImpl.validateResponseIfRequired(ResponseSpecificationImpl.groovy:654)&#13;
+java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)&#13;
+java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)&#13;
+java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)&#13;
+io.restassured.internal.ResponseSpecificationImpl.statusCode(ResponseSpecificationImpl.groovy:124)&#13;
+io.restassured.internal.ResponseSpecificationImpl.statusCode(ResponseSpecificationImpl.groovy:132)&#13;
+io.restassured.internal.ValidatableResponseOptionsImpl.statusCode(ValidatableResponseOptionsImpl.java:119)&#13;
+com.itsd.test.tests.IncomeSourceEOPSTest.validatePostResponseCode(IncomeSourceEOPSTest.java:35)&#13;
+com.itsd.test.steps.IncomeSourceEOPSSteps.verifyPostStatusCode(IncomeSourceEOPSSteps.java:61)&#13;
+✽.I should see the response status code for post as 202(src/test/resources/features/incomesourcestore/RetrieveIncomeSourceDetails.feature:19)&#13;
+</system-err></testcase></testsuite>

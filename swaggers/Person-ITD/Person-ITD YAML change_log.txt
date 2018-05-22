@@ -1,0 +1,19 @@
+Version 1.0.a - Initial creation.
+Author: Glen Barker
+Date: 
+
+Version 1.0.d 
+Author: Glen Barker	
+Date: 23/04/2018	
+Changes: 
+	Refactored the context of the Person ITD API Path
+	Removed versioning from the paths
+    	Aligned field names (taxableEntityId)
+		Updated Descriptions
+
+Version 1.0.e
+Author: Glen Barker	
+Date: 27/04/2018	
+Changes: 
+	Refactored the error response returned from Person ITD to follow a pre-agreed error pattern as per the 'MTDfB Micro service glossary' call on 27/04/18.
+	Expanded the response data-set for GET PersonDetails to now include dateOfBirth and statePensionAgeDate. 

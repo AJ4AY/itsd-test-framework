@@ -1,0 +1,823 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "This service provides operations related to summary income sources information relevant to the Income Tax sub domain. Income sources are owned by a tax entity and within that tax entity have a unique id.",
+    "version": "1.0.12",
+    "title": "Income Sources Store"
+  },
+  "host": "income-sources-store:8001",
+  "basePath": "/",
+  "tags": [
+    {
+      "name": "External",
+      "description": "APIs exposed to DES via the API Gateway"
+    },
+    {
+      "name": "Income Sources Store",
+      "description": "The Income Sources Store APIs"
+    }
+  ],
+  "paths": {
+    "/income-sources/{taxEntityId}": {
+      "get": {
+        "tags": [
+          "Income Sources Store"
+        ],
+        "summary": "Get a list of income sources for the tax entity.",
+        "description": "This operation retrieves a list of income sources associated with the supplied tax entity. If the tax year is specified then the period that relates to the tax year is returned rather than all periods associated with the income source.",
+        "operationId": "getIncomeSources",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json;charset=utf8"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/parameters/TaxEntityId"
+          },
+          {
+            "$ref": "#/parameters/TaxYearQuery"
+          },
+          {
+            "$ref": "#/parameters/EffectiveDateQuery"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Income sources have been found for this tax entity.",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/IncomeSourceOutput"
+              }
+            }
+          },
+          "401": {
+            "description": "You are not authorised to access this resource."
+          },
+          "404": {
+            "description": "The tax entity does not have any associated income sources."
+          },
+          "502": {
+            "description": "The service is experiencing temporary difficulties please try again later."
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Income Sources Store"
+        ],
+        "summary": "Create a new income source.",
+        "description": "Creates a new income source returning the id assigned to it.",
+        "operationId": "createIncomeSource",
+        "consumes": [
+          "application/json;charset=utf8"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/parameters/TaxEntityId"
+          },
+          {
+            "$ref": "#/parameters/IncomeSourceBody"
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "The income source has been created.",
+            "headers": {
+              "location": {
+                "type": "string",
+                "description": "The income source ID of the newly created income source."
+              }
+            }
+          },
+          "401": {
+            "description": "You are not authorised to access this resource."
+          },
+          "422": {
+            "description": "Unprocessable Entity - see error code and description for reason.  Valid error code values are\n  1000 - input schema validation failure;\n  1001 - invalid accounting period;",
+            "schema": {
+              "$ref": "#/definitions/Errors"
+            }
+          },
+          "502": {
+            "description": "The service is experiencing temporary difficulties please try again later."
+          }
+        }
+      }
+    },
+    "/income-sources/{taxEntityId}/{incomeSourceType}/{taxYear}": {
+      "get": {
+        "tags": [
+          "Income Sources Store"
+        ],
+        "summary": "Get a specific income source based on tax year.",
+        "description": "Get an income source by its type as long its owned by the tax entity provided.",
+        "operationId": "getIncomeSourceTaxYear",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json;charset=utf8"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/parameters/TaxEntityId"
+          },
+          {
+            "$ref": "#/parameters/IncomeSourceType"
+          },
+          {
+            "$ref": "#/parameters/TaxYear"
+          },
+          {
+            "$ref": "#/parameters/IncomeSourceIdQuery"
+          },
+          {
+            "$ref": "#/parameters/EffectiveDateQuery"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Income sources have been found for this tax entity.",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/IncomeSourceOutput"
+              }
+            }
+          },
+          "401": {
+            "description": "You are not authorised to access this resource."
+          },
+          "404": {
+            "description": "The tax entity does not have any associated income sources."
+          },
+          "502": {
+            "description": "The service is experiencing temporary difficulties please try again later."
+          }
+        }
+      }
+    },
+    "/income-sources/{taxEntityId}/{incomeSourceType}/{ibdPeriodStartDate}/{ibdPeriodEndDate}": {
+      "get": {
+        "tags": [
+          "Income Sources Store"
+        ],
+        "summary": "Get Income Source for an IBD Period",
+        "description": "Get a specific income source based on IBDs period start/end dates.  An income will only be returned if it contains a taxation period entierly within (or equal to) the start and end dates provided.",
+        "operationId": "getIncomeSourcePeriodDate",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json;charset=utf8"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/parameters/TaxEntityId"
+          },
+          {
+            "$ref": "#/parameters/IncomeSourceType"
+          },
+          {
+            "$ref": "#/parameters/IbdPeriodStartDate"
+          },
+          {
+            "$ref": "#/parameters/IbdPeriodEndDate"
+          },
+          {
+            "$ref": "#/parameters/IncomeSourceIdQuery"
+          },
+          {
+            "$ref": "#/parameters/EffectiveDateQuery"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Income sources have been found for this tax entity.",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/IncomeSourceOutput"
+              }
+            }
+          },
+          "401": {
+            "description": "You are not authorised to access this resource."
+          },
+          "404": {
+            "description": "The tax entity does not have any associated income sources."
+          },
+          "502": {
+            "description": "The service is experiencing temporary difficulties please try again later."
+          }
+        }
+      }
+    },
+    "/income-sources/{taxEntityId}/{incomeSourceId}": {
+      "post": {
+        "tags": [
+          "Income Sources Store",
+          "External"
+        ],
+        "summary": "API#36 - Create Income Source.",
+        "description": "Create a new income source with the supplied id.",
+        "operationId": "createIncomeSourceWithId",
+        "consumes": [
+          "application/json;charset=utf8"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/parameters/TaxEntityId"
+          },
+          {
+            "$ref": "#/parameters/IncomeSourceId"
+          },
+          {
+            "$ref": "#/parameters/IncomeSourceBody"
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "The income source has been accepted."
+          },
+          "401": {
+            "description": "You are not authorised to access this resource."
+          },
+          "409": {
+            "description": "Income source ID already exists."
+          },
+          "422": {
+            "description": "Unprocessable Entity - see error code and description for reason.  Valid error code values are\n  1000 - input schema validation failure;\n  1001 - invalid accounting period;",
+            "schema": {
+              "$ref": "#/definitions/Errors"
+            }
+          },
+          "502": {
+            "description": "The service is experiencing temporary difficulties please try again later."
+          }
+        }
+      }
+    },
+    "/income-sources/{taxEntityId}/{incomeSourceId}/{taxYear}/biss": {
+      "get": {
+        "tags": [
+          "Income Sources Store",
+          "External"
+        ],
+        "summary": "API#? - Request Business Income Sources Summary (BISS)",
+        "description": "This operation gets the corresponding income source for a given taxEntityId and incomeSourceId for a taxYear, and calls liabilty calculator service with the income source and returns the BISS result.",
+        "operationId": "getIncomeSourceBISS",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json;charset=utf8"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/parameters/TaxEntityId"
+          },
+          {
+            "$ref": "#/parameters/IncomeSourceId"
+          },
+          {
+            "$ref": "#/parameters/TaxYear"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The income source has been found. Returning BISS response.",
+            "schema": {
+              "$ref": "#/definitions/Biss"
+            }
+          },
+          "401": {
+            "description": "You are not authorised to access this resource."
+          },
+          "404": {
+            "description": "No income source found"
+          },
+          "422": {
+            "description": "The BISS request has been rejected. Valid error code values are\n  1003 - No income submissions exist;\n  1004 - Accounting period provided does not match the accounting period held for this business;",
+            "schema": {
+              "$ref": "#/definitions/Errors"
+            }
+          },
+          "502": {
+            "description": "The service is experiencing temporary difficulties please try again later."
+          }
+        }
+      }
+    },
+    "/income-sources/{taxEntityId}/{incomeSourceId}/{taxYear}/eops": {
+      "post": {
+        "tags": [
+          "Income Sources Store",
+          "External"
+        ],
+        "summary": "API#? - EOPS Declaration",
+        "description": "This operation gets the corresponding income source for a given taxEntityId and incomeSourceId, calls liabilty calculator service with the income source and returns the EOPS result.",
+        "operationId": "createIncomeSourceEOPS",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json;charset=utf8"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/parameters/TaxEntityId"
+          },
+          {
+            "$ref": "#/parameters/IncomeSourceId"
+          },
+          {
+            "$ref": "#/parameters/TaxYear"
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "The income source has been found and your EOPS declaration has been accepted."
+          },
+          "401": {
+            "description": "You are not authorised to access this resource."
+          },
+          "404": {
+            "description": "No income source found"
+          },
+          "409": {
+            "description": "Taxation period has already been finalised."
+          },
+          "422": {
+            "description": "Your request to EOPS has been rejected. Where data has failed validation the detailed validation errors have been returned. Valid error code values are\n  1003 - No income submissions exist;\n  1004 - Accounting period provided does not match the accounting period held for this business;\n  1005 - Accounting period has not ended;\n  1006 - Period to finalise has passed;\n  1099 - BVR falures exist",
+            "schema": {
+              "$ref": "#/definitions/Errors"
+            }
+          },
+          "502": {
+            "description": "The service is experiencing temporary difficulties please try again later."
+          }
+        }
+      }
+    }
+  },
+  "parameters": {
+    "TaxEntityId": {
+      "in": "path",
+      "name": "taxEntityId",
+      "type": "string",
+      "description": "Unique identity of the tax entity to which the income source must relate.",
+      "required": true,
+      "maxLength": 16,
+      "pattern": "^[a-zA-Z0-9]+$"
+    },
+    "IncomeSourceId": {
+      "in": "path",
+      "name": "incomeSourceId",
+      "type": "string",
+      "required": true,
+      "description": "The Income Source ID",
+      "pattern": "^[A-Za-z0-9]{15}$"
+    },
+    "IncomeSourceIdQuery": {
+      "in": "query",
+      "name": "incomeSourceId",
+      "type": "string",
+      "required": false,
+      "description": "The Income Source ID",
+      "pattern": "^[A-Za-z0-9]{15}$"
+    },
+    "IncomeSourceType": {
+      "in": "path",
+      "name": "incomeSourceType",
+      "required": true,
+      "type": "string",
+      "enum": [
+        "01",
+        "02",
+        "03",
+        "04",
+        "05",
+        "06",
+        "07",
+        "08",
+        "09",
+        "10",
+        "11",
+        "12",
+        "13",
+        "14",
+        "99"
+      ],
+      "description": "Indicates the income source type.  Values are - 01=Self-Employment, 02=UK Property, 03=FHL Property - EEA, 04=FHL Property - UK, 05=Employment, 06=Foreign income, 07=Dividends from foreign companies, 08=Trusts and Estates, 09=Interest from UK banks, building societies and securities etc., 10=Dividends from UK companies; 11=UK pensions and state benefits, 12=Gains on life insurance policies etc., 13=Share schemes, 14=Partnership, 99=Other income."
+    },
+    "IbdPeriodStartDate": {
+      "in": "path",
+      "name": "ibdPeriodStartDate",
+      "description": "Start date of period held in IBD, format yyyy-MM-dd.",
+      "required": true,
+      "type": "string",
+      "pattern": "^\\d{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$"
+    },
+    "IbdPeriodEndDate": {
+      "in": "path",
+      "name": "ibdPeriodEndDate",
+      "description": "End date of period held in IBD, format yyyy-MM-dd.",
+      "required": true,
+      "type": "string",
+      "pattern": "^\\d{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$"
+    },
+    "TaxYear": {
+      "in": "path",
+      "name": "taxYear",
+      "description": "Restrict the periods returned to just those which are associated with the supplied tax year.  Expects this in the format yyyy, where 2018 would represent the tax year between 2017-04-06 and 2018-04-05.",
+      "required": true,
+      "type": "string",
+      "pattern": "^2[0-9]{3}$"
+    },
+    "TaxYearQuery": {
+      "in": "query",
+      "name": "taxYear",
+      "description": "Restrict the periods returned to just those which are associated with the supplied tax year.  Expects this in the format yyyy, where 2018 would represent the tax year between 2017-04-06 and 2018-04-05.",
+      "required": false,
+      "type": "string",
+      "pattern": "^2[0-9]{3}$"
+    },
+    "EffectiveDateQuery": {
+      "in": "query",
+      "name": "EffectiveDate",
+      "type": "string",
+      "required": false,
+      "description": "The Income Source ID",
+      "pattern": "^\\d{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$"
+    },
+    "IncomeSourceBody": {
+      "in": "body",
+      "name": "incomeSource",
+      "description": "The income source details to create or replace an existing entry with.",
+      "required": true,
+      "schema": {
+        "$ref": "#/definitions/IncomeSourceInput"
+      }
+    }
+  },
+  "definitions": {
+    "IncomeSourceInput": {
+      "type": "object",
+      "required": [
+        "commencementDate",
+        "TaxationPeriods",
+        "incomeSourceType",
+        "taxEntityId"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "cessationDate": {
+          "$ref": "#/definitions/DateString",
+          "description": "The date the income source ceased."
+        },
+        "commencementDate": {
+          "$ref": "#/definitions/DateString",
+          "description": "The date the income source commenced."
+        },
+        "incomeSourceId": {
+          "$ref": "#/definitions/IncomeSourceId",
+          "description": "The unique identifier of the income source."
+        },
+        "incomeSourceName": {
+          "type": "string",
+          "description": "The name of the income source."
+        },
+        "taxationPeriods": {
+          "type": "array",
+          "description": "The taxation periods for the income source.",
+          "items": {
+            "$ref": "#/definitions/TaxationPeriodInput"
+          }
+        },
+        "taxEntityId": {
+          "$ref": "#/definitions/TaxEntityId",
+          "description": "The unique identifier of the income source."
+        },
+        "incomeSourceType": {
+          "$ref": "#/definitions/IncomeSourceType"
+        }
+      }
+    },
+    "TaxationPeriodInput": {
+      "type": "object",
+      "required": [
+        "accountingPeriodStartDate",
+        "accountingPeriodEndDate"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "accountingPeriodStartDate": {
+          "$ref": "#/definitions/DateString",
+          "description": "The start date of the accounting period."
+        },
+        "accountingPeriodEndDate": {
+          "$ref": "#/definitions/DateString",
+          "description": "The end date of the accounting period."
+        },
+        "basisPeriodStartDate": {
+          "$ref": "#/definitions/DateString",
+          "description": "The start date of the basis period."
+        },
+        "basisPeriodEndDate": {
+          "$ref": "#/definitions/DateString",
+          "description": "The end date of the basis period."
+        },
+        "obligations": {
+          "type": "array",
+          "description": "The obligation periods for this taxation period.",
+          "items": {
+            "$ref": "#/definitions/Obligation"
+          }
+        }
+      }
+    },
+    "IncomeSourceOutput": {
+      "type": "object",
+      "required": [
+        "commencementDate",
+        "incomeSourceName",
+        "taxationPeriods",
+        "incomeSourceType",
+        "taxEntityId",
+        "incomeSourceId"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "cessationDate": {
+          "$ref": "#/definitions/DateString",
+          "description": "The date the income source ceased."
+        },
+        "commencementDate": {
+          "$ref": "#/definitions/DateString",
+          "description": "The date the income source commenced."
+        },
+        "incomeSourceId": {
+          "$ref": "#/definitions/IncomeSourceId",
+          "description": "The unique identifier of the income source."
+        },
+        "incomeSourceName": {
+          "type": "string",
+          "description": "The name of the income source."
+        },
+        "taxationPeriods": {
+          "type": "array",
+          "description": "The taxation periods for the income source.",
+          "items": {
+            "$ref": "#/definitions/TaxationPeriodOutput"
+          }
+        },
+        "taxEntityId": {
+          "$ref": "#/definitions/TaxEntityId",
+          "description": "The unique identifier of the income source."
+        },
+        "incomeSourceType": {
+          "$ref": "#/definitions/IncomeSourceType"
+        }
+      }
+    },
+    "TaxationPeriodOutput": {
+      "type": "object",
+      "required": [
+        "endDate",
+        "startDate"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "endDate": {
+          "$ref": "#/definitions/DateString",
+          "description": "The end date of the entire taxation period."
+        },
+        "startDate": {
+          "$ref": "#/definitions/DateString",
+          "description": "The start date of the entire taxation period."
+        },
+        "accountingPeriodStartDate": {
+          "$ref": "#/definitions/DateString",
+          "description": "The start date of the accounting period."
+        },
+        "accountingPeriodEndDate": {
+          "$ref": "#/definitions/DateString",
+          "description": "The end date of the accounting period."
+        },
+        "basisPeriodStartDate": {
+          "$ref": "#/definitions/DateString",
+          "description": "The start date of the basis period."
+        },
+        "basisPeriodEndDate": {
+          "$ref": "#/definitions/DateString",
+          "description": "The end date of the basis period."
+        },
+        "finalisationTimestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The finalisation timestamp for this taxation period. Format yyyy-MM-ddThh:mm:sssZ."
+        },
+        "obligations": {
+          "type": "array",
+          "description": "The obligation periods for this taxation period.",
+          "items": {
+            "$ref": "#/definitions/Obligation"
+          }
+        }
+      }
+    },
+    "Obligation": {
+      "type": "object",
+      "required": [
+        "obligationPeriodStartDate",
+        "obligationPeriodEndDate"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "obligationPeriodEndDate": {
+          "$ref": "#/definitions/DateString",
+          "description": "The end date of the obligation period."
+        },
+        "obligationPeriodStartDate": {
+          "$ref": "#/definitions/DateString",
+          "description": "The start date of the obligation period."
+        }
+      }
+    },
+    "Biss": {
+      "type": "object",
+      "description": "The business income source summary.",
+      "required": [
+        "incomeSourceID",
+        "totalIncome",
+        "totalExpenses",
+        "netProfit",
+        "netLoss",
+        "taxableProfit",
+        "taxableLoss"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "incomeSourceID": {
+          "$ref": "#/definitions/IncomeSourceId"
+        },
+        "totalIncome": {
+          "$ref": "#/definitions/MonetaryPos",
+          "description": "Total income for the income source"
+        },
+        "totalExpenses": {
+          "$ref": "#/definitions/MonetaryPos",
+          "description": "Total expenses for the income source"
+        },
+        "netProfit": {
+          "$ref": "#/definitions/MonetaryPos",
+          "description": "Net profit of income Source"
+        },
+        "netLoss": {
+          "$ref": "#/definitions/MonetaryPos",
+          "description": "Net loss of income Source"
+        },
+        "totalAdditions": {
+          "$ref": "#/definitions/MonetaryPos",
+          "description": "The total additions to net profit (or deduction to net loss)"
+        },
+        "totalDeductions": {
+          "$ref": "#/definitions/MonetaryPos",
+          "description": "The total deductions to net loss (or addition to net profit)"
+        },
+        "accountingAdjustments": {
+          "$ref": "#/definitions/MonetaryPosNeg",
+          "description": "Accounting adjustments"
+        },
+        "taxableProfit": {
+          "$ref": "#/definitions/MonetaryPos",
+          "description": "Taxable net profit from the income source"
+        },
+        "taxableLoss": {
+          "$ref": "#/definitions/MonetaryPos",
+          "description": "Taxable net loss from the income source"
+        }
+      }
+    },
+    "Errors": {
+      "type": "object",
+      "required": [
+        "errorCode",
+        "errorDescription"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "errorCode": {
+          "type": "string",
+          "description": "The error code representing the error that has occured. Valid values are\n  1000 - input schema validation failure;\n  1001 - invalid accounting period;\n  1003 - No income submissions exist;\n  1004 - Accounting period provided does not match the accounting period held for this business;\n  1005 - Accounting period has not ended;\n  1006 - Period to finalise has passed;\n  1099 - BVR falures exist",
+          "enum": [
+            "1000",
+            "1001",
+            "1003",
+            "1004",
+            "1005",
+            "1006",
+            "1099"
+          ]
+        },
+        "errorDescription": {
+          "type": "string",
+          "description": "The textual description of the error."
+        },
+        "validationRuleFailures": {
+          "type": "array",
+          "description": "BVR related rule failures",
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "type",
+              "text"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^C[0-9]{5}$",
+                "description": "BVR message ID"
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "ERR",
+                  "WARN"
+                ],
+                "description": "Type of message (Error or Warning)"
+              },
+              "text": {
+                "type": "string",
+                "description": "BVR message text"
+              }
+            }
+          }
+        }
+      }
+    },
+    "DateString": {
+      "type": "string",
+      "description": "Standardised date format of yyyy-MM-dd",
+      "pattern": "^\\d{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$"
+    },
+    "TaxEntityId": {
+      "type": "string",
+      "description": "Unique tax entity identifier",
+      "maxLength": 16,
+      "pattern": "^[a-zA-Z0-9]+$"
+    },
+    "IncomeSourceId": {
+      "type": "string",
+      "description": "The Income Source ID",
+      "pattern": "^[A-Za-z0-9]{15}$"
+    },
+    "IncomeSourceType": {
+      "type": "string",
+      "enum": [
+        "01",
+        "02",
+        "03",
+        "04",
+        "05",
+        "06",
+        "07",
+        "08",
+        "09",
+        "10",
+        "11",
+        "12",
+        "13",
+        "14",
+        "99"
+      ],
+      "description": "Indicates the income source type.  Values are - 01=Self-Employment, 02=UK Property, 03=FHL Property - EEA, 04=FHL Property - UK, 05=Employment, 06=Foreign income, 07=Dividends from foreign companies, 08=Trusts and Estates, 09=Interest from UK banks, building societies and securities etc., 10=Dividends from UK companies; 11=UK pensions and state benefits, 12=Gains on life insurance policies etc., 13=Share schemes, 14=Partnership, 99=Other income."
+    },
+    "MonetaryPos": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 99999999999999.99,
+      "multipleOf": 0.01,
+      "description": "Defines a monetary value (to 2 decimal places), between 0 and 99,999,999,999,999.99"
+    },
+    "MonetaryPosNeg": {
+      "type": "number",
+      "minimum": -99999999999999.99,
+      "maximum": 99999999999999.99,
+      "multipleOf": 0.01,
+      "description": "Defines a monetary value (to 2 decimal places), between -99,999,999,999,999.99 and 99,999,999,999,999.99"
+    }
+  }
+}

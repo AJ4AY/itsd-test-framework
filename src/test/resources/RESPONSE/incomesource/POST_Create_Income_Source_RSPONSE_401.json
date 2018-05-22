@@ -1,0 +1,11 @@
+RESPONSE
+
+401 Unauthorized
+
+body: 
+
+{
+
+You are not authorised to access this resource.
+
+}

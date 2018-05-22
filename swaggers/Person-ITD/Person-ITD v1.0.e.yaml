@@ -1,0 +1,174 @@
+swagger: '2.0'
+info:
+  description: Documentation for Person ITD Microservice APIs.
+  version: 1.0.e
+  title: Person Income Tax Details
+host: 'person-itd:8080'
+basePath: /person-itd
+paths:
+  '/person-details/{taxableEntityId}':
+    get:
+      tags:
+        - PersonDetails
+      summary: Get Person Details
+      description: Get Person Details for an Income Tax calculation, for a given individual for a given date range.
+      operationId: getPersonDetails
+      produces:
+        - application/json
+      parameters:
+        - $ref: '#/parameters/taxableEntityId'
+        - $ref: '#/parameters/periodStart'
+        - $ref: '#/parameters/periodEnd'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/personDetails'
+        '400':
+          description: >- 
+              Bad Request - see error code and description for reason. 
+              Valid error code values are
+                5000 - Invalid input parameter'
+          schema:
+            $ref: '#/definitions/errorResponse'
+        '404':
+          description: Not Found
+        '500': 
+          description: Internal Server Error
+          
+  '/person-details/validation-data/{taxableEntityId}':
+    get:
+      tags:
+        - PersonDetails
+      summary: Get Validation Data
+      description: Get Person Details for the purposes of upstream validation by a consuming application.
+      operationId: getValidationData
+      produces:
+        - application/json
+      parameters:
+        - $ref: '#/parameters/taxableEntityId'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/validationData'
+        '400':
+          description: >- 
+              Bad Request - see error code and description for reason. 
+              Valid error code values are
+                5000 - Invalid input parameter'
+          schema:
+            $ref: '#/definitions/errorResponse'
+        '404':
+          description: Not Found
+        '500': 
+          description: Internal Server Error
+parameters:
+  taxableEntityId:
+    in: path
+    name: taxableEntityId
+    description: ID for taxable entity
+    required: true
+    type: string
+    maxLength: 9
+    pattern: ^([ACEHJLMOPRSWXY][A-CEGHJ-NPR-TW-Z]|B[A-CEHJ-NPR-TW-Z]|G[ACEGHJ-NPR-TW-Z]|[KT][A-CEGHJ-MPR-TW-Z]|N[A-CEGHJL-NPR-SW-Z]|Z[A-CEGHJ-NPR-TW-Y])[0-9]{6}[A-D ]?$
+  periodStart:
+    in: query
+    name: periodStart
+    description: Period start date
+    type: string
+    format: date
+  periodEnd:
+    in: query
+    name: periodEnd
+    description: Period end date
+    type: string
+    format: date
+definitions:
+  personDetails:
+    description: Details of a person
+    type: object
+    properties:
+      individualId:
+        description: ID for taxable entity
+        type: string
+        example: AB123456C
+      periodEndNationTaxRegime:
+        description: |
+          Nation tax regime for the tax year in which the period end date falls. 
+            * 1 - UK Not Scottish
+            * 2 - Scottish
+        type: integer
+        enum:
+          - 1
+          - 2
+      primaryResidency:
+        description: Details of a person's residency.
+        type: array
+        items:
+          type: object
+          properties:
+            periodStartDate:
+              type: string
+              format: date
+              example: '2017-04-06'
+            periodEndDate:
+              type: string
+              format: date
+              example: '2018-04-05'
+            residencyArea:
+              type: string
+              enum:
+                - Scotland
+                - Not Specified
+          required:
+            - residencyArea
+            - periodStartDate
+            
+      dateOfBirth:
+        description: Date of birth
+        type: string
+        format: date
+        example: '1960-09-23'
+        
+      statePensionAgeDate:
+        description: State pension age date
+        type: string
+        format: date
+        example: '2027-03-06'
+
+  validationData:
+    description: Person details for the purposes of validating a Periodic Submission on IBD Store.
+    type: object
+    properties:
+      dateOfBirth:
+        description: Date of birth
+        type: string
+        format: date
+        example: '1960-09-23'
+      statePensionAgeDate:
+        description: State pension age date
+        type: string
+        format: date
+        example: '2027-03-06'
+    required:
+      - dateOfBirth
+      - statePensionAgeDate
+
+  errorResponse:
+    type: object
+    required:
+      - errorCode
+      - errorDescription
+    properties:
+      errorCode:
+        type: string
+        description: >-
+          The error code representing the error that has occurred. Valid values are
+            5000 - Invalid input parameter;
+        enum:
+          - '5000'
+      errorDescription:
+        type: string
+        description: The textual description of the error.
+      
