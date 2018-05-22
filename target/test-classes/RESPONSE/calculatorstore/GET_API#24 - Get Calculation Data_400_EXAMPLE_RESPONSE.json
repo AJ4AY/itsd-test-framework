@@ -1,9 +1,0 @@
-RESPONSE:
-
-404 NOT FOUND
-
-
-{
-   "code": "BAD REQUEST",
-   "reason": "Submission has not passed validation."
-}
